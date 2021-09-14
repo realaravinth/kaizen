@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["kaizen"] = [{"text":"impl ResponseError for <a class=\"enum\" href=\"kaizen/errors/enum.ServiceError.html\" title=\"enum kaizen::errors::ServiceError\">ServiceError</a>","synthetic":false,"types":["kaizen::errors::ServiceError"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
