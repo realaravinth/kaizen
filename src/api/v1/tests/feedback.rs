@@ -18,7 +18,7 @@ use actix_web::http::StatusCode;
 use actix_web::test;
 
 use crate::api::v1::campaign::{CreateReq, CreateResp};
-use crate::api::v1::feedback::{RatingReq, RatingResp};
+use crate::api::v1::feedback::{DescriptionReq, RatingReq, RatingResp};
 use crate::api::v1::ROUTES;
 use crate::data::Data;
 use crate::errors::*;
@@ -67,7 +67,6 @@ async fn feedback_works() {
     .await;
 
     let add_feedback_route = ROUTES.feedback.rating.replace("{campaign_id}", &uuid.uuid);
-    println!("{}", &add_feedback_route);
     let add_feedback_resp = test::call_service(
         &app,
         post_request!(&rating, &add_feedback_route)
@@ -76,4 +75,29 @@ async fn feedback_works() {
     )
     .await;
     assert_eq!(add_feedback_resp.status(), StatusCode::OK);
+    let feedback_id: RatingResp = test::read_body_json(add_feedback_resp).await;
+
+    let description_req = DescriptionReq {
+        description: NAME.into(),
+    };
+
+    bad_post_req_test(
+        NAME,
+        PASSWORD,
+        &ROUTES.feedback.description.replace("{feedback_id}", NAME),
+        &description_req,
+        ServiceError::NotAnId,
+    )
+    .await;
+
+    let add_description_route = ROUTES
+        .feedback
+        .description
+        .replace("{feedback_id}", &feedback_id.uuid);
+    let set_description_resp = test::call_service(
+        &app,
+        post_request!(&description_req, &add_description_route).to_request(),
+    )
+    .await;
+    assert_eq!(set_description_resp.status(), StatusCode::OK);
 }

@@ -44,7 +44,7 @@ pub mod routes {
     impl Feedback {
         pub const fn new() -> Feedback {
             let rating = "/api/v1/feedback/{campaign_id}/rating";
-            let description = "/api/v1/feedback/description";
+            let description = "/api/v1/feedback/{feedback_id}/description";
             Feedback {
                 rating,
                 description,
@@ -55,6 +55,7 @@ pub mod routes {
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(rating);
+    cfg.service(description);
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -76,7 +77,6 @@ pub async fn rating(
 ) -> ServiceResult<impl Responder> {
     let path = path.into_inner();
     let payload = payload.into_inner();
-    println!("server uuid: {}", &path);
     let campaign_id = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
 
     let now = OffsetDateTime::now_utc();
@@ -133,4 +133,36 @@ pub async fn rating(
     };
 
     Ok(HttpResponse::Ok().json(resp))
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct DescriptionReq {
+    pub description: String,
+}
+
+#[my_codegen::post(path = "crate::V1_API_ROUTES.feedback.description")]
+pub async fn description(
+    payload: web::Json<DescriptionReq>,
+    path: web::Path<String>,
+    data: AppData,
+) -> ServiceResult<impl Responder> {
+    let path = path.into_inner();
+    let payload = payload.into_inner();
+    let feedback_id = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
+
+    let now = OffsetDateTime::now_utc();
+
+    sqlx::query!(
+        "UPDATE kaizen_feedback 
+        SET 
+            description = $1, time  = $2
+        WHERE uuid = $3",
+        &payload.description,
+        &now,
+        &feedback_id,
+    )
+    .execute(&data.db)
+    .await?;
+
+    Ok(HttpResponse::Ok())
 }
