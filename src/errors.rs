@@ -48,8 +48,6 @@ pub enum ServiceError {
 
     #[display(fmt = "Wrong password")]
     WrongPassword,
-    #[display(fmt = "Username not found")]
-    UsernameNotFound,
     #[display(fmt = "Account not found")]
     AccountNotFound,
 
@@ -111,7 +109,6 @@ impl ResponseError for ServiceError {
             ServiceError::NotAUrl => StatusCode::BAD_REQUEST,
             ServiceError::NotAnId => StatusCode::BAD_REQUEST,
             ServiceError::WrongPassword => StatusCode::UNAUTHORIZED,
-            ServiceError::UsernameNotFound => StatusCode::NOT_FOUND,
             ServiceError::AccountNotFound => StatusCode::NOT_FOUND,
 
             ServiceError::ProfainityError => StatusCode::BAD_REQUEST,
