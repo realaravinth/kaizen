@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Home | Kaizen</title>
+	</head>
+	<body>
+      <div class="container">
+        <div class="banner">
+          <img width="180px" src="./logo.svg" alt="Kaizen logo">
+          <h1>Kaizen</h1>
+          <p class="tagline">
+            Collect anonymous feedback
+          </p>
+          <button type="submit">Get Started</button>
+        </div>
+      <h2>Why?</h2>
+    <p>
+    Official documentation is often the only source of information available to
+    the user. Good documentation must be clear, easy to navigate, and
+    should answer most "how to do X" questions. 
+    <br> <br>
+    As authors and maintainers do we really know if our documentation is helpful?
+    </p>
+
+  <h2>How?</h2>
+    <p>
+    We provide a simple widget that you can embed in your webpages. The widget
+    contains two buttons and an optional text field where your users can
+    provide descriptive feedback.
+
+    The binary is self-contained and easy to self-host. You can either host it
+    a VPS or use one of the free PaaS services like Heroku
+    </p>
+
+      <footer>
+  <div class="footer__container">
+    <div class="footer__column">
+                <span class="license__conatiner">
+        All text
+                &nbsp;
+        <a
+          class="license__link"
+                  rel="noreferrer"
+                  rel="noreferrer"
+          href="http://creativecommons.org/licenses/by-sa/4.0/"
+          target="_blank">CC-BY-SA</a>
+                &nbsp;
+        &
+                &nbsp;
+        <a
+          class="license__link"
+                  rel="noreferrer"
+	          href="https://www.gnu.org/licenses/agpl-3.0.en.html"
+          target="_blank"
+        >code AGPL</a>
+
+        <div class="footer__column-divider">|</div>
+
+        <a
+          class="license__link"
+                  rel="noreferrer"
+          href="https://www.eff.org/issues/do-not-track/amp/"
+          target="_blank"
+        >No AMP </a>
+                </span>
+    </div>
+  </div>
+</footer>	
+
+      </div>
+	</body>
+	<style type="text/css" media="screen">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+	body {
+        margin: auto;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #323232;
+	}
+
+    h2 {
+      padding: 10px 0px;
+    }
+
+    p {
+      padding: 10px 0;
+    }
+
+    .container {
+      width: 50%;
+      margin: auto;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .banner {
+      height: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .banner > img {
+      margin-top: 20px;
+    }
+
+    .tagline{
+      text-align: center;
+      padding: 0px;
+    }
+
+    .banner > button {
+      border: none;
+      background-color: none;
+      background-color: #b4345b;
+      margin-top: 20px;
+      color: #fff;
+      width: 150px;
+      height: 40px;
+    }
+
+footer {
+  display: block;
+  color: black;
+  font-size: 0.9rem;
+  margin: auto;
+  margin-top: 30px;
+}
+
+.footer__container {
+  width: 100%;
+  justify-content: space-between;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+}
+
+.footer__column {
+  list-style: none;
+  display: flex;
+  margin: auto 50px;
+}
+
+.footer__link-container {
+  margin: 5px;
+}
+.license__conatiner {
+	display: flex;
+}
+
+.footer__link {
+  text-decoration: none;
+}
+
+.footer__column-divider {
+  font-weight: 500;
+  opacity: 0.7;
+  margin: 0 5px;
+}
+
+	</style>
+</html>
