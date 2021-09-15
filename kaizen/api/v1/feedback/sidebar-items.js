@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["services",""]],"mod":[["routes",""]],"struct":[["RatingReq",""]]});
+initSidebarItems({"fn":[["services",""]],"mod":[["routes",""]],"struct":[["DescriptionReq",""],["RatingReq",""],["RatingResp",""],["description",""],["rating",""]]});

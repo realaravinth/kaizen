@@ -242,14 +242,6 @@
 <span id="242">242</span>
 <span id="243">243</span>
 <span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -279,7 +271,6 @@
 <span class="kw">use</span> <span class="ident">derive_more</span>::{<span class="ident">Display</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">url::ParseError</span>;
-<span class="kw">use</span> <span class="ident">uuid::Error</span> <span class="kw">as</span> <span class="ident">UuidError</span>;
 <span class="kw">use</span> <span class="ident">validator::ValidationErrors</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">PartialEq</span>, <span class="ident">Error</span>)]</span>
@@ -334,11 +325,6 @@
     <span class="doccomment">/// email is already taken</span>
     <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Email not available&quot;</span>)]</span>
     <span class="ident">EmailTaken</span>,
-
-    <span class="doccomment">/// when the a token name is already taken</span>
-    <span class="doccomment">/// token not found</span>
-    <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Token not found. Is token registered?&quot;</span>)]</span>
-    <span class="ident">TokenNotFound</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
@@ -383,8 +369,6 @@
 
             <span class="ident">ServiceError::UsernameTaken</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::BAD_REQUEST</span>,
             <span class="ident">ServiceError::EmailTaken</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::BAD_REQUEST</span>,
-
-            <span class="ident">ServiceError::TokenNotFound</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::NOT_FOUND</span>,
         }
     }
 }
