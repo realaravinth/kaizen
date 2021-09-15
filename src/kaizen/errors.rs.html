@@ -246,6 +246,10 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -275,6 +279,7 @@
 <span class="kw">use</span> <span class="ident">derive_more</span>::{<span class="ident">Display</span>, <span class="ident">Error</span>};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">url::ParseError</span>;
+<span class="kw">use</span> <span class="ident">uuid::Error</span> <span class="kw">as</span> <span class="ident">UuidError</span>;
 <span class="kw">use</span> <span class="ident">validator::ValidationErrors</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Display</span>, <span class="ident">PartialEq</span>, <span class="ident">Error</span>)]</span>
@@ -292,6 +297,8 @@
     <span class="ident">NotAnEmail</span>,
     <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;The value you entered for URL is not a URL&quot;</span>)]</span> <span class="comment">//405j</span>
     <span class="ident">NotAUrl</span>,
+    <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;The value you entered for ID is not a valid ID&quot;</span>)]</span> <span class="comment">//405j</span>
+    <span class="ident">NotAnId</span>,
 
     <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Wrong password&quot;</span>)]</span>
     <span class="ident">WrongPassword</span>,
@@ -361,6 +368,7 @@
             <span class="ident">ServiceError::InternalServerError</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::INTERNAL_SERVER_ERROR</span>,
             <span class="ident">ServiceError::NotAnEmail</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::BAD_REQUEST</span>,
             <span class="ident">ServiceError::NotAUrl</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::BAD_REQUEST</span>,
+            <span class="ident">ServiceError::NotAnId</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::BAD_REQUEST</span>,
             <span class="ident">ServiceError::WrongPassword</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::UNAUTHORIZED</span>,
             <span class="ident">ServiceError::UsernameNotFound</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::NOT_FOUND</span>,
             <span class="ident">ServiceError::AccountNotFound</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">StatusCode::NOT_FOUND</span>,
