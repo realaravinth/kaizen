@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web::http::{header, StatusCode};
+use actix_web::http::StatusCode;
 use actix_web::test;
 
 use crate::api::v1::campaign::{CreateReq, CreateResp};
@@ -34,16 +34,14 @@ async fn campaign_works() {
     const CAMPAIGN_NAME: &str = "testcampaignuser";
 
     let app = get_app!(data).await;
-
     delete_user(NAME, &data).await;
-
-    // 1. Register and signin
     let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
 
     let new = CreateReq {
         name: CAMPAIGN_NAME.into(),
     };
+
     let new_resp = test::call_service(
         &app,
         post_request!(&new, ROUTES.campaign.new)
@@ -52,4 +50,24 @@ async fn campaign_works() {
     )
     .await;
     assert_eq!(new_resp.status(), StatusCode::OK);
+    let uuid: CreateResp = test::read_body_json(new_resp).await;
+
+    bad_post_req_test_witout_payload(
+        NAME,
+        PASSWORD,
+        &ROUTES.campaign.delete.replace("{uuid}", NAME),
+        ServiceError::NotAnId,
+    )
+    .await;
+
+    let del_route = ROUTES.campaign.delete.replace("{uuid}", &uuid.uuid);
+    println!("del route: {}", &del_route);
+    let del_resp = test::call_service(
+        &app,
+        post_request!(&del_route)
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
+    assert_eq!(del_resp.status(), StatusCode::OK);
 }

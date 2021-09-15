@@ -108,6 +108,19 @@
       "nullable": []
     }
   },
+  "59d5be626bcdfa181161ec6bf1e10ac5a354d9b896491259f9f1266eda36f413": {
+    "query": "DELETE \n                    FROM kaizen_campaign \n                WHERE \n                    user_id = (SELECT \n                                    ID \n                                FROM \n                                    kaizen_users \n                                WHERE \n                                    name = $1\n                            )\n                AND\n                    uuid = ($2)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Uuid"
+        ]
+      },
+      "nullable": []
+    }
+  },
   "63d404b14df9ad5e4ade2adb1c81a213b7f1f8f74addaf2469b57f0cb591d186": {
     "query": "UPDATE kaizen_users set password = $1\n        WHERE name = $2",
     "describe": {

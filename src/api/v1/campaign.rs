@@ -19,6 +19,7 @@ use std::borrow::Cow;
 use actix_identity::Identity;
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use super::get_uuid;
 use crate::errors::*;
@@ -60,6 +61,7 @@ pub mod routes {
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(new);
+    cfg.service(delete);
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -122,4 +124,40 @@ pub async fn new(
     };
 
     Ok(HttpResponse::Ok().json(resp))
+}
+
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.campaign.delete",
+    wrap = "crate::CheckLogin"
+)]
+pub async fn delete(
+    id: Identity,
+    data: AppData,
+    path: web::Path<String>,
+) -> ServiceResult<impl Responder> {
+    let username = id.identity().unwrap();
+    let path = path.into_inner();
+    //TODO rm unwrap
+    let uuid = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
+
+    sqlx::query!(
+        "DELETE 
+                    FROM kaizen_campaign 
+                WHERE 
+                    user_id = (SELECT 
+                                    ID 
+                                FROM 
+                                    kaizen_users 
+                                WHERE 
+                                    name = $1
+                            )
+                AND
+                    uuid = ($2)",
+        &username,
+        &uuid
+    )
+    .execute(&data.db)
+    .await?;
+
+    Ok(HttpResponse::Ok())
 }

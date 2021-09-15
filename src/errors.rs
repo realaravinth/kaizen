@@ -26,6 +26,7 @@ use argon2_creds::errors::CredsError;
 use derive_more::{Display, Error};
 use serde::{Deserialize, Serialize};
 use url::ParseError;
+use uuid::Error as UuidError;
 use validator::ValidationErrors;
 
 #[derive(Debug, Display, PartialEq, Error)]
@@ -43,6 +44,8 @@ pub enum ServiceError {
     NotAnEmail,
     #[display(fmt = "The value you entered for URL is not a URL")] //405j
     NotAUrl,
+    #[display(fmt = "The value you entered for ID is not a valid ID")] //405j
+    NotAnId,
 
     #[display(fmt = "Wrong password")]
     WrongPassword,
@@ -112,6 +115,7 @@ impl ResponseError for ServiceError {
             ServiceError::InternalServerError => StatusCode::INTERNAL_SERVER_ERROR,
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
             ServiceError::NotAUrl => StatusCode::BAD_REQUEST,
+            ServiceError::NotAnId => StatusCode::BAD_REQUEST,
             ServiceError::WrongPassword => StatusCode::UNAUTHORIZED,
             ServiceError::UsernameNotFound => StatusCode::NOT_FOUND,
             ServiceError::AccountNotFound => StatusCode::NOT_FOUND,

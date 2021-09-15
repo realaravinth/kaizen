@@ -144,3 +144,25 @@ pub async fn bad_post_req_test<T: Serialize>(
     //println!("{}", txt.error);
     assert_eq!(resp_err.error, format!("{}", err));
 }
+
+/// bad post req test without payload
+pub async fn bad_post_req_test_witout_payload(
+    name: &str,
+    password: &str,
+    url: &str,
+    err: ServiceError,
+) {
+    let (data, _, signin_resp) = signin(name, password).await;
+    let cookies = get_cookie!(signin_resp);
+    let app = get_app!(data).await;
+
+    let resp = test::call_service(
+        &app,
+        post_request!(url).cookie(cookies.clone()).to_request(),
+    )
+    .await;
+    assert_eq!(resp.status(), err.status_code());
+    let resp_err: ErrorToResponse = test::read_body_json(resp).await;
+    //println!("{}", txt.error);
+    assert_eq!(resp_err.error, format!("{}", err));
+}
