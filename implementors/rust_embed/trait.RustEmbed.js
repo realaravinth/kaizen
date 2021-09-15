@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["kaizen"] = [{"text":"impl RustEmbed for <a class=\"struct\" href=\"kaizen/static_assets/static_files/struct.Asset.html\" title=\"struct kaizen::static_assets::static_files::Asset\">Asset</a>","synthetic":false,"types":["kaizen::static_assets::static_files::Asset"]},{"text":"impl RustEmbed for <a class=\"struct\" href=\"kaizen/static_assets/static_files/struct.Favicons.html\" title=\"struct kaizen::static_assets::static_files::Favicons\">Favicons</a>","synthetic":false,"types":["kaizen::static_assets::static_files::Favicons"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

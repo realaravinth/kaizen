@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["build",""],["main",""]],"mod":[["data","App data: database connections, etc."],["settings",""]],"struct":[["Data","App data"],["SETTINGS",""],["Settings",""]]});
+initSidebarItems({"fn":[["build",""],["cache_bust",""],["main",""]],"mod":[["settings",""]],"struct":[["SETTINGS",""],["Settings",""]]});
