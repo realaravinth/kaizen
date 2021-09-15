@@ -17,7 +17,7 @@
 use actix_web::http::StatusCode;
 use actix_web::test;
 
-use crate::api::v1::campaign::{CreateReq, CreateResp};
+use crate::api::v1::campaign::{CreateReq, CreateResp, ListCampaignResp};
 use crate::api::v1::ROUTES;
 use crate::data::Data;
 use crate::errors::*;
@@ -52,6 +52,17 @@ async fn campaign_works() {
     assert_eq!(new_resp.status(), StatusCode::OK);
     let uuid: CreateResp = test::read_body_json(new_resp).await;
 
+    let list_resp = test::call_service(
+        &app,
+        post_request!(ROUTES.campaign.list)
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
+    assert_eq!(list_resp.status(), StatusCode::OK);
+    let list: Vec<ListCampaignResp> = test::read_body_json(list_resp).await;
+    assert!(list.iter().any(|c| c.name == CAMPAIGN_NAME));
+
     bad_post_req_test_witout_payload(
         NAME,
         PASSWORD,
@@ -70,4 +81,15 @@ async fn campaign_works() {
     )
     .await;
     assert_eq!(del_resp.status(), StatusCode::OK);
+
+    let list_resp_post_deletion = test::call_service(
+        &app,
+        post_request!(ROUTES.campaign.list)
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
+    assert_eq!(list_resp_post_deletion.status(), StatusCode::OK);
+    let list: Vec<ListCampaignResp> = test::read_body_json(list_resp_post_deletion).await;
+    assert!(!list.iter().any(|c| c.name == CAMPAIGN_NAME));
 }

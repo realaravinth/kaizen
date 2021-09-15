@@ -26,16 +26,6 @@ use super::get_uuid;
 use crate::errors::*;
 use crate::AppData;
 
-/* Workflow:
- * 1. Show two buttons:
- *    - like
- *    - dislike
- * 2. User clicks one of the two buttons > post req to server > server returns feedback UUID
- *      It's possible that the user doesn't want to type a message or might forget to type a
- *      message
- * 3. Show message box to collect descriptive feedback > post req with UUID from server
- */
-
 pub mod routes {
     pub struct Campaign {
         pub new: &'static str,
@@ -63,6 +53,7 @@ pub mod routes {
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(new);
     cfg.service(delete);
+    cfg.service(list_campaign);
     cfg.service(get_feedback);
 }
 
@@ -163,12 +154,6 @@ pub async fn delete(
     Ok(HttpResponse::Ok())
 }
 
-pub struct Feedback {
-    time: OffsetDateTime,
-    description: Option<String>,
-    helpful: bool,
-}
-
 #[derive(Serialize, Deserialize)]
 pub struct GetFeedbackResp {
     pub time: u64,
@@ -188,6 +173,12 @@ pub async fn get_feedback(
     let username = id.identity().unwrap();
     let path = path.into_inner();
     let uuid = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
+
+    struct Feedback {
+        time: OffsetDateTime,
+        description: Option<String>,
+        helpful: bool,
+    }
 
     let mut feedback = sqlx::query_as!(
         Feedback,
@@ -227,4 +218,53 @@ pub async fn get_feedback(
     });
 
     Ok(HttpResponse::Ok().json(feedback_resp))
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ListCampaignResp {
+    pub name: String,
+    pub uuid: String,
+}
+
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.campaign.list",
+    wrap = "crate::CheckLogin"
+)]
+pub async fn list_campaign(id: Identity, data: AppData) -> ServiceResult<impl Responder> {
+    let username = id.identity().unwrap();
+
+    struct ListCampaign {
+        pub name: String,
+        pub uuid: Uuid,
+    }
+
+    let mut campaigns = sqlx::query_as!(
+        ListCampaign,
+        "SELECT 
+            name, uuid
+        FROM 
+            kaizen_campaign 
+            WHERE
+                user_id = (
+                    SELECT 
+                        ID
+                    FROM 
+                        kaizen_users
+                    WHERE
+                        name = $1
+                )",
+        &username
+    )
+    .fetch_all(&data.db)
+    .await?;
+
+    let mut list_resp = Vec::with_capacity(campaigns.len());
+    campaigns.drain(0..).for_each(|c| {
+        list_resp.push(ListCampaignResp {
+            name: c.name,
+            uuid: c.uuid.to_string(),
+        });
+    });
+
+    Ok(HttpResponse::Ok().json(list_resp))
 }

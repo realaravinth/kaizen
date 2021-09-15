@@ -120,5 +120,5 @@ async fn feedback_works() {
     .await;
     assert_eq!(get_feedback_resp.status(), StatusCode::OK);
     let feedback: Vec<GetFeedbackResp> = test::read_body_json(get_feedback_resp).await;
-    feedback.iter().any(|f| f.description == Some(NAME.into()));
+    assert!(feedback.iter().any(|f| f.description == Some(NAME.into())));
 }
