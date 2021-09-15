@@ -53,8 +53,9 @@ lazy_static = "1.4"
 url = "2.2"
 
 rand = "0.8"
+uuid = { version="0.8.2", features = ["v4"]}
 
 openssl = { version = "0.10.29", features = ["vendored"] }
 
 [build-dependencies]
-sqlx = { version = "0.5.5", features = [ "runtime-actix-rustls", "postgres", "time", "offline" ] }
+sqlx = { version = "0.5.5", features = [ "runtime-actix-rustls", "uuid", "postgres", "time", "offline" ] }

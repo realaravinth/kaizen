@@ -33,6 +33,20 @@
       "nullable": []
     }
   },
+  "1f4e7a91145b807dcc869ed7ca1b94f4104c19dc7b2f2706903019878fe5bb23": {
+    "query": "INSERT INTO \n                kaizen_campaign (name , uuid, user_id) \n            VALUES \n                ($1, $2, \n                    (SELECT \n                        ID \n                    FROM \n                        kaizen_users \n                    WHERE \n                        name = $3\n                    )\n                )",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Uuid",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
   "3667d48af10edf695c0d611435d0efda70b3b81b5c940d601ab1001f52bb20b0": {
     "query": "insert into kaizen_users \n        (name , password, email, secret) values ($1, $2, $3, $4)",
     "describe": {

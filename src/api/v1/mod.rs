@@ -14,11 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 use actix_web::web::ServiceConfig;
+use uuid::Uuid;
 
 pub mod account;
 pub mod auth;
+pub mod campaign;
+pub mod feedback;
 pub mod meta;
 mod routes;
 
@@ -28,12 +30,13 @@ pub fn services(cfg: &mut ServiceConfig) {
     meta::services(cfg);
     auth::services(cfg);
     account::services(cfg);
+    feedback::services(cfg);
+    campaign::services(cfg);
 }
 
 pub fn get_random(len: usize) -> String {
-    use std::iter;
-
     use rand::{distributions::Alphanumeric, rngs::ThreadRng, thread_rng, Rng};
+    use std::iter;
 
     let mut rng: ThreadRng = thread_rng();
 
@@ -42,6 +45,10 @@ pub fn get_random(len: usize) -> String {
         .map(char::from)
         .take(len)
         .collect::<String>()
+}
+
+pub fn get_uuid() -> Uuid {
+    Uuid::new_v4()
 }
 
 #[cfg(test)]

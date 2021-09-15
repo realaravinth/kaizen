@@ -17,6 +17,8 @@
 
 use super::account::routes::Account;
 use super::auth::routes::Auth;
+use super::campaign::routes::Campaign;
+use super::feedback::routes::Feedback;
 use super::meta::routes::Meta;
 
 pub const ROUTES: Routes = Routes::new();
@@ -25,6 +27,8 @@ pub struct Routes {
     pub auth: Auth,
     pub meta: Meta,
     pub account: Account,
+    pub feedback: Feedback,
+    pub campaign: Campaign,
 }
 
 impl Routes {
@@ -33,6 +37,8 @@ impl Routes {
             auth: Auth::new(),
             meta: Meta::new(),
             account: Account::new(),
+            feedback: Feedback::new(),
+            campaign: Campaign::new(),
         }
     }
 }
