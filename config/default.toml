@@ -1,9 +1,10 @@
 debug = true
-source_code = "https://github.com/realaravinth/athena"
+allow_registration = true
+source_code = "https://github.com/realaravinth/kaizen"
 password = "password"
 
 [server]
-# Please set a unique value, your mCaptcha instance's security depends on this being 
+# Please set a unique value, your kaizen instance's security depends on this being 
 # unique
 cookie_secret = "Zae0OOxf^bOJ#zN^&k7VozgW&QAx%n02TQFXpRMG4cCU0xMzgu3dna@tQ9dvc&TlE6p*n#kXUdLZJCQsuODIV%r$@o4%770ePQB7m#dpV!optk01NpY0@615w5e2Br4d"
 # The port at which you want authentication to listen to

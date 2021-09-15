@@ -26,11 +26,18 @@ use lazy_static::lazy_static;
 use log::info;
 
 //mod api;
+mod api;
 mod data;
 mod errors;
+mod middleware;
 mod settings;
+#[cfg(test)]
+#[macro_use]
+mod tests;
 
 pub use crate::data::Data;
+pub use api::v1::ROUTES as V1_API_ROUTES;
+pub use middleware::auth::CheckLogin;
 pub use settings::Settings;
 
 lazy_static! {
@@ -58,7 +65,7 @@ async fn main() -> std::io::Result<()> {
     );
 
     let data = Data::new().await;
-    //    sqlx::migrate!("./migrations/").run(&data.db).await.unwrap();
+    sqlx::migrate!("./migrations/").run(&data.db).await.unwrap();
     let data = actix_web::web::Data::new(data);
 
     println!("Starting server on: http://{}", SETTINGS.server.get_ip());
@@ -76,7 +83,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(actix_middleware::NormalizePath::new(
                 actix_middleware::TrailingSlash::Trim,
             ))
-            //.configure(api::v1::services)
+            .configure(api::v1::services)
             .app_data(get_json_err())
     })
     .bind(SETTINGS.server.get_ip())

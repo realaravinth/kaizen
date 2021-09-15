@@ -1,0 +1,202 @@
+{
+  "db": "PostgreSQL",
+  "0636abbf3737c2a2ba8ec648c3f197f97bdf957742b45ce37c01796c1a447066": {
+    "query": "SELECT EXISTS (SELECT 1 from kaizen_users WHERE email = $1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "exists",
+          "type_info": "Bool"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
+  "06f0ac155f3e84550e48435d67200e7f34a6777074e180a8a719e4a8433b460d": {
+    "query": "UPDATE kaizen_users set email = $1\n        WHERE name = $2",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "3667d48af10edf695c0d611435d0efda70b3b81b5c940d601ab1001f52bb20b0": {
+    "query": "insert into kaizen_users \n        (name , password, email, secret) values ($1, $2, $3, $4)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text",
+          "Varchar",
+          "Varchar"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "40709a115986020a7c73cf1dc10dff4667b8192ff8c0a76c37de2901cfb6f81a": {
+    "query": "SELECT password  FROM kaizen_users WHERE name = ($1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "password",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "471aa7fc9d83489b6937bbba79377af58e31bcdb15fbef636d99aafab3ee3309": {
+    "query": "INSERT INTO kaizen_users \n        (name , password,  secret) VALUES ($1, $2, $3)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text",
+          "Varchar"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "4a0c353f57bf8cae9af76437dd6e1076c1ed7eda4888cb1fc6a0acf271f5285e": {
+    "query": "DELETE FROM kaizen_users WHERE name = ($1)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "63d404b14df9ad5e4ade2adb1c81a213b7f1f8f74addaf2469b57f0cb591d186": {
+    "query": "UPDATE kaizen_users set password = $1\n        WHERE name = $2",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "7390892659b9e4ac5c97fb1d7487b5b944118892e778172bfdf5e8d644a8c0b1": {
+    "query": "SELECT name, password  FROM kaizen_users WHERE email = ($1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "name",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 1,
+          "name": "password",
+          "type_info": "Text"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        false
+      ]
+    }
+  },
+  "785b03db3b0ea092586a627813dfa233b0f596af197365997f6d4c85d13a4c42": {
+    "query": "UPDATE kaizen_users set secret = $1\n        WHERE name = $2",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "a196c1cd72b5f8e5366f441bb1fd66267f8bc0845f3bb4cbda8f9621efd453d6": {
+    "query": "SELECT EXISTS (SELECT 1 from kaizen_users WHERE name = $1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "exists",
+          "type_info": "Bool"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        null
+      ]
+    }
+  },
+  "a88b9eb50a65bcf6ae8540efeda8a6947ee0a29873941def59ec8f62a9d0dcaf": {
+    "query": "UPDATE kaizen_users set name = $1\n        WHERE name = $2",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "ae9c121d622569a476e8283201a29979aee7c2840f6f06c500dbf578a4641b78": {
+    "query": "SELECT secret  FROM kaizen_users WHERE name = ($1)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "secret",
+          "type_info": "Varchar"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  }
+}
