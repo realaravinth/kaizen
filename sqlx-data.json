@@ -47,6 +47,21 @@
       "nullable": []
     }
   },
+  "285d5d64107b09b965bec51133b3538fe1bd7a6203b16960faaa30d0dcdfebd5": {
+    "query": "INSERT INTO \n                kaizen_feedback (rating , uuid, campaign_id, time) \n            VALUES \n                ($1, $2, $3, $4)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Bool",
+          "Uuid",
+          "Uuid",
+          "Timestamptz"
+        ]
+      },
+      "nullable": []
+    }
+  },
   "3667d48af10edf695c0d611435d0efda70b3b81b5c940d601ab1001f52bb20b0": {
     "query": "insert into kaizen_users \n        (name , password, email, secret) values ($1, $2, $3, $4)",
     "describe": {
@@ -158,6 +173,22 @@
         false,
         false
       ]
+    }
+  },
+  "776914827d6a4f00d7483a626dd088d0d99c0bf76771855d64a121d008ee6e48": {
+    "query": "INSERT INTO \n                kaizen_feedback (rating , description, uuid, campaign_id, time) \n            VALUES \n                ($1, $2, $3, $4, $5)",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Bool",
+          "Varchar",
+          "Uuid",
+          "Uuid",
+          "Timestamptz"
+        ]
+      },
+      "nullable": []
     }
   },
   "785b03db3b0ea092586a627813dfa233b0f596af197365997f6d4c85d13a4c42": {

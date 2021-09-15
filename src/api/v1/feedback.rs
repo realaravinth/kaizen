@@ -14,9 +14,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+use std::borrow::Cow;
+
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use sqlx::types::time::OffsetDateTime;
+use uuid::Uuid;
 
+use super::get_uuid;
 use crate::errors::*;
 use crate::AppData;
 
@@ -38,7 +43,7 @@ pub mod routes {
 
     impl Feedback {
         pub const fn new() -> Feedback {
-            let rating = "/api/v1/feedback/rating";
+            let rating = "/api/v1/feedback/{campaign_id}/rating";
             let description = "/api/v1/feedback/description";
             Feedback {
                 rating,
@@ -49,7 +54,7 @@ pub mod routes {
 }
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
-    //   cfg.service(rating);
+    cfg.service(rating);
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -58,8 +63,74 @@ pub struct RatingReq {
     pub description: Option<String>,
 }
 
-//#[my_codegen::post(path = "crate::V1_API_ROUTES.feedback.rating")]
-//pub async fn rating(payload: web::Json<RatingReq>, data: AppData) -> ServiceResult<impl Responder> {
-//    unimplemented!()
-//    //    Ok(HttpResponse::Ok().json(resp))
-//}
+#[derive(Debug, Deserialize, Serialize)]
+pub struct RatingResp {
+    pub uuid: String,
+}
+
+#[my_codegen::post(path = "crate::V1_API_ROUTES.feedback.rating")]
+pub async fn rating(
+    payload: web::Json<RatingReq>,
+    path: web::Path<String>,
+    data: AppData,
+) -> ServiceResult<impl Responder> {
+    let path = path.into_inner();
+    let payload = payload.into_inner();
+    println!("server uuid: {}", &path);
+    let campaign_id = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
+
+    let now = OffsetDateTime::now_utc();
+
+    let mut uuid;
+
+    loop {
+        uuid = get_uuid();
+
+        let res = if payload.description.is_some() {
+            sqlx::query!(
+                "INSERT INTO 
+                kaizen_feedback (rating , description, uuid, campaign_id, time) 
+            VALUES 
+                ($1, $2, $3, $4, $5)",
+                &payload.helpful,
+                &payload.description.as_ref().unwrap(),
+                &uuid,
+                &campaign_id,
+                &now,
+            )
+            .execute(&data.db)
+            .await
+        } else {
+            sqlx::query!(
+                "INSERT INTO 
+                kaizen_feedback (rating , uuid, campaign_id, time) 
+            VALUES 
+                ($1, $2, $3, $4)",
+                &payload.helpful,
+                &uuid,
+                &campaign_id,
+                &now,
+            )
+            .execute(&data.db)
+            .await
+        };
+
+        if res.is_ok() {
+            break;
+        } else if let Err(sqlx::Error::Database(err)) = res {
+            if err.code() == Some(Cow::from("23505"))
+                && err.message().contains("kaizen_campaign_uuid_key")
+            {
+                continue;
+            } else {
+                return Err(sqlx::Error::Database(err).into());
+            }
+        }
+    }
+
+    let resp = RatingResp {
+        uuid: uuid.to_string(),
+    };
+
+    Ok(HttpResponse::Ok().json(resp))
+}

@@ -16,4 +16,5 @@
 */
 mod auth;
 mod campaign;
+mod feedback;
 mod protected;

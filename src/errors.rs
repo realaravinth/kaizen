@@ -26,7 +26,6 @@ use argon2_creds::errors::CredsError;
 use derive_more::{Display, Error};
 use serde::{Deserialize, Serialize};
 use url::ParseError;
-use uuid::Error as UuidError;
 use validator::ValidationErrors;
 
 #[derive(Debug, Display, PartialEq, Error)]
@@ -81,11 +80,6 @@ pub enum ServiceError {
     /// email is already taken
     #[display(fmt = "Email not available")]
     EmailTaken,
-
-    /// when the a token name is already taken
-    /// token not found
-    #[display(fmt = "Token not found. Is token registered?")]
-    TokenNotFound,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -130,8 +124,6 @@ impl ResponseError for ServiceError {
 
             ServiceError::UsernameTaken => StatusCode::BAD_REQUEST,
             ServiceError::EmailTaken => StatusCode::BAD_REQUEST,
-
-            ServiceError::TokenNotFound => StatusCode::NOT_FOUND,
         }
     }
 }

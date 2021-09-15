@@ -137,7 +137,6 @@ pub async fn delete(
 ) -> ServiceResult<impl Responder> {
     let username = id.identity().unwrap();
     let path = path.into_inner();
-    //TODO rm unwrap
     let uuid = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
 
     sqlx::query!(
