@@ -1,4 +1,5 @@
 <div align="center">
+<img width="120px" src="./static/cache/img/logo.svg" alt="Kaizen logo">
 <h1> Kaizen </h1>
 <p>
 
@@ -12,9 +13,11 @@
 
 </div>
 
-[Kaizen](https://en.wikipedia.org/wiki/Kaizen#History) is the Japanese
-philosophy of constantly reinventing daily routines to become more
-efficient. 
+> [Kaizen](https://en.wikipedia.org/wiki/Kaizen#History) is the Japanese
+> philosophy of constantly reinventing daily routines to become more
+> efficient. 
+
+## Why?
 
 Most FOSS projects enjoy limited popularity with little internet
 presence. For such projects, official documentation is often the only
@@ -25,4 +28,9 @@ clear, easy to navigate, and should answer most "how to do X" questions.
 As authors and maintainers do we really know if our documentation is
 helpful?
 
-This is a simple web service to collect anonymous feedback.
+## What?
+
+This is a simple web service to collect anonymous feedback. We have
+options to embed simple buttons on pages, with an optional text box.
+Feedback is stored date-wise. No other data is collected from your
+users.

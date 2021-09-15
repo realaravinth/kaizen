@@ -31,6 +31,7 @@ mod data;
 mod errors;
 mod middleware;
 mod settings;
+mod static_assets;
 #[cfg(test)]
 #[macro_use]
 mod tests;
@@ -40,9 +41,14 @@ pub use api::v1::ROUTES as V1_API_ROUTES;
 pub use middleware::auth::CheckLogin;
 pub use settings::Settings;
 
+use static_assets::FileMap;
+
 lazy_static! {
     pub static ref SETTINGS: Settings = Settings::new().unwrap();
+    pub static ref FILES: FileMap = FileMap::new();
 }
+
+pub const CACHE_AGE: u32 = 604800;
 
 pub const COMPILED_DATE: &str = env!("COMPILED_DATE");
 pub const GIT_COMMIT_HASH: &str = env!("GIT_HASH");
@@ -84,6 +90,7 @@ async fn main() -> std::io::Result<()> {
                 actix_middleware::TrailingSlash::Trim,
             ))
             .configure(api::v1::services)
+            .configure(static_assets::services)
             .app_data(get_json_err())
     })
     .bind(SETTINGS.server.get_ip())

@@ -55,7 +55,19 @@ url = "2.2"
 rand = "0.8"
 uuid = { version="0.8.2", features = ["v4"]}
 
+mime_guess = "2.0.3"
+rust-embed = "6.0.0"
+cache-buster = { git = "https://github.com/realaravinth/cache-buster" }
+mime = "0.3.16"
+
 openssl = { version = "0.10.29", features = ["vendored"] }
+
+tera = { version = "1", default-features = false }
 
 [build-dependencies]
 sqlx = { version = "0.5.5", features = [ "runtime-actix-rustls", "uuid", "postgres", "time", "offline" ] }
+#serde_yaml = "0.8.17"
+serde_json = "1"
+#yaml-rust = "0.4.5"
+cache-buster = { version = "0.2.0", git = "https://github.com/realaravinth/cache-buster" }
+mime = "0.3.16"
