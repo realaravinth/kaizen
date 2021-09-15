@@ -17,7 +17,7 @@
 use actix_web::http::StatusCode;
 use actix_web::test;
 
-use crate::api::v1::campaign::{CreateReq, CreateResp};
+use crate::api::v1::campaign::{CreateReq, CreateResp, GetFeedbackResp};
 use crate::api::v1::feedback::{DescriptionReq, RatingReq, RatingResp};
 use crate::api::v1::ROUTES;
 use crate::data::Data;
@@ -100,4 +100,25 @@ async fn feedback_works() {
     )
     .await;
     assert_eq!(set_description_resp.status(), StatusCode::OK);
+
+    bad_post_req_test(
+        NAME,
+        PASSWORD,
+        &ROUTES.campaign.get_feedback.replace("{uuid}", NAME),
+        &rating,
+        ServiceError::NotAnId,
+    )
+    .await;
+
+    let get_feedback_route = ROUTES.campaign.get_feedback.replace("{uuid}", &uuid.uuid);
+    let get_feedback_resp = test::call_service(
+        &app,
+        post_request!(&get_feedback_route)
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
+    assert_eq!(get_feedback_resp.status(), StatusCode::OK);
+    let feedback: Vec<GetFeedbackResp> = test::read_body_json(get_feedback_resp).await;
+    feedback.iter().any(|f| f.description == Some(NAME.into()));
 }

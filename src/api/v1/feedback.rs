@@ -89,7 +89,7 @@ pub async fn rating(
         let res = if payload.description.is_some() {
             sqlx::query!(
                 "INSERT INTO 
-                kaizen_feedback (rating , description, uuid, campaign_id, time) 
+                kaizen_feedback (helpful , description, uuid, campaign_id, time) 
             VALUES 
                 ($1, $2, $3, $4, $5)",
                 &payload.helpful,
@@ -103,7 +103,7 @@ pub async fn rating(
         } else {
             sqlx::query!(
                 "INSERT INTO 
-                kaizen_feedback (rating , uuid, campaign_id, time) 
+                kaizen_feedback (helpful, uuid, campaign_id, time) 
             VALUES 
                 ($1, $2, $3, $4)",
                 &payload.helpful,

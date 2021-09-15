@@ -19,6 +19,7 @@ use std::borrow::Cow;
 use actix_identity::Identity;
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use sqlx::types::time::OffsetDateTime;
 use uuid::Uuid;
 
 use super::get_uuid;
@@ -39,21 +40,21 @@ pub mod routes {
     pub struct Campaign {
         pub new: &'static str,
         pub delete: &'static str,
-        pub get: &'static str,
-        pub get_all: &'static str,
+        pub get_feedback: &'static str,
+        pub list: &'static str,
     }
 
     impl Campaign {
         pub const fn new() -> Campaign {
             let new = "/api/v1/campaign/new";
             let delete = "/api/v1/campaign/{uuid}/delete";
-            let get = "/api/v1/campaign/{uuid}delete";
-            let get_all = "/api/v1/campaign/list";
+            let get_feedback = "/api/v1/campaign/{uuid}/feedback";
+            let list = "/api/v1/campaign/list";
             Campaign {
                 new,
                 delete,
-                get,
-                get_all,
+                get_feedback,
+                list,
             }
         }
     }
@@ -62,6 +63,7 @@ pub mod routes {
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(new);
     cfg.service(delete);
+    cfg.service(get_feedback);
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -159,4 +161,70 @@ pub async fn delete(
     .await?;
 
     Ok(HttpResponse::Ok())
+}
+
+pub struct Feedback {
+    time: OffsetDateTime,
+    description: Option<String>,
+    helpful: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GetFeedbackResp {
+    pub time: u64,
+    pub description: Option<String>,
+    pub helpful: bool,
+}
+
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.campaign.get_feedback",
+    wrap = "crate::CheckLogin"
+)]
+pub async fn get_feedback(
+    id: Identity,
+    data: AppData,
+    path: web::Path<String>,
+) -> ServiceResult<impl Responder> {
+    let username = id.identity().unwrap();
+    let path = path.into_inner();
+    let uuid = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
+
+    let mut feedback = sqlx::query_as!(
+        Feedback,
+        "SELECT 
+            time, description, helpful
+        FROM 
+            kaizen_feedback 
+        WHERE campaign_id = (
+            SELECT uuid 
+            FROM 
+                kaizen_campaign
+            WHERE
+                uuid = $1
+            AND
+                user_id = (
+                    SELECT 
+                        ID
+                    FROM 
+                        kaizen_users
+                    WHERE
+                        name = $2
+                )
+           )",
+        &uuid,
+        &username
+    )
+    .fetch_all(&data.db)
+    .await?;
+
+    let mut feedback_resp = Vec::with_capacity(feedback.len());
+    feedback.drain(0..).for_each(|f| {
+        feedback_resp.push(GetFeedbackResp {
+            time: f.time.unix_timestamp() as u64,
+            description: f.description,
+            helpful: f.helpful,
+        });
+    });
+
+    Ok(HttpResponse::Ok().json(feedback_resp))
 }
