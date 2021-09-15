@@ -68,6 +68,7 @@
 <span id="68">68</span>
 <span id="69">69</span>
 <span id="70">70</span>
+<span id="71">71</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -119,6 +120,7 @@
         <span class="kw">let</span> <span class="ident">creds</span> <span class="op">=</span> <span class="self">Self</span><span class="ident">::get_creds</span>();
         <span class="kw">let</span> <span class="ident">c</span> <span class="op">=</span> <span class="ident">creds</span>.<span class="ident">clone</span>();
 
+        <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
         <span class="kw">let</span> <span class="ident">init</span> <span class="op">=</span> <span class="ident">thread::spawn</span>(<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
             <span class="macro">log::info!</span>(<span class="string">&quot;Initializing credential manager&quot;</span>);
             <span class="ident">c</span>.<span class="ident">init</span>();
