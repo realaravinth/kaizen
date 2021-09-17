@@ -166,6 +166,15 @@
 <span id="166">166</span>
 <span id="167">167</span>
 <span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -188,6 +197,7 @@
 <span class="kw">use</span> <span class="ident">actix_web</span>::{<span class="ident">web</span>, <span class="ident">HttpResponse</span>, <span class="ident">Responder</span>};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">sqlx::types::time::OffsetDateTime</span>;
+<span class="kw">use</span> <span class="ident">url::Url</span>;
 <span class="kw">use</span> <span class="ident">uuid::Uuid</span>;
 
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::get_uuid</span>;
@@ -203,6 +213,8 @@
  *      message
  * 3. Show message box to collect descriptive feedback &gt; post req with UUID from server
  */</span>
+
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">URL_MAX_LENGTH</span>: <span class="ident">usize</span> <span class="op">=</span> <span class="number">2048</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">routes</span> {
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Feedback</span> {
@@ -231,6 +243,7 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RatingReq</span> {
     <span class="kw">pub</span> <span class="ident">helpful</span>: <span class="ident">bool</span>,
     <span class="kw">pub</span> <span class="ident">description</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">page_url</span>: <span class="ident">String</span>,
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
@@ -244,8 +257,13 @@
     <span class="ident">path</span>: <span class="ident">web::Path</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="ident">data</span>: <span class="ident">AppData</span>,
 ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">ServiceResult</span><span class="op">&lt;</span><span class="kw">impl</span> <span class="ident">Responder</span><span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">into_inner</span>();
     <span class="kw">let</span> <span class="ident">payload</span> <span class="op">=</span> <span class="ident">payload</span>.<span class="ident">into_inner</span>();
+    <span class="kw">if</span> <span class="ident">payload</span>.<span class="ident">page_url</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="ident">URL_MAX_LENGTH</span> {
+        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">ServiceError::URLTooLong</span>);
+    }
+    <span class="ident">Url::parse</span>(<span class="kw-2">&amp;</span><span class="ident">payload</span>.<span class="ident">page_url</span>)<span class="question-mark">?</span>;
+
+    <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="ident">path</span>.<span class="ident">into_inner</span>();
     <span class="kw">let</span> <span class="ident">campaign_id</span> <span class="op">=</span> <span class="ident">Uuid::parse_str</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>).<span class="ident">map_err</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="ident">ServiceError::NotAnId</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let</span> <span class="ident">now</span> <span class="op">=</span> <span class="ident">OffsetDateTime::now_utc</span>();
