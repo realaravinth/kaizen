@@ -19,6 +19,7 @@ use std::borrow::Cow;
 use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use sqlx::types::time::OffsetDateTime;
+use url::Url;
 use uuid::Uuid;
 
 use super::get_uuid;
@@ -34,6 +35,8 @@ use crate::AppData;
  *      message
  * 3. Show message box to collect descriptive feedback > post req with UUID from server
  */
+
+pub const URL_MAX_LENGTH: usize = 2048;
 
 pub mod routes {
     pub struct Feedback {
@@ -62,6 +65,7 @@ pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
 pub struct RatingReq {
     pub helpful: bool,
     pub description: Option<String>,
+    pub page_url: String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -75,8 +79,13 @@ pub async fn rating(
     path: web::Path<String>,
     data: AppData,
 ) -> ServiceResult<impl Responder> {
-    let path = path.into_inner();
     let payload = payload.into_inner();
+    if payload.page_url.len() > URL_MAX_LENGTH {
+        return Err(ServiceError::URLTooLong);
+    }
+    Url::parse(&payload.page_url)?;
+
+    let path = path.into_inner();
     let campaign_id = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
 
     let now = OffsetDateTime::now_utc();

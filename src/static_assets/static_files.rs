@@ -117,9 +117,7 @@ mod tests {
 
         let resp = test::call_service(
             &app,
-            test::TestRequest::get()
-                .uri(&assets::LOGO.path)
-                .to_request(),
+            test::TestRequest::get().uri(assets::LOGO.path).to_request(),
         )
         .await;
         assert_eq!(resp.status(), StatusCode::OK);

@@ -45,6 +45,8 @@ pub enum ServiceError {
     NotAUrl,
     #[display(fmt = "The value you entered for ID is not a valid ID")] //405j
     NotAnId,
+    #[display(fmt = "URL too long, maximum length can't be greater then 2048 characters")] //405
+    URLTooLong,
 
     #[display(fmt = "Wrong password")]
     WrongPassword,
@@ -108,6 +110,7 @@ impl ResponseError for ServiceError {
             ServiceError::NotAnEmail => StatusCode::BAD_REQUEST,
             ServiceError::NotAUrl => StatusCode::BAD_REQUEST,
             ServiceError::NotAnId => StatusCode::BAD_REQUEST,
+            ServiceError::URLTooLong => StatusCode::BAD_REQUEST,
             ServiceError::WrongPassword => StatusCode::UNAUTHORIZED,
             ServiceError::AccountNotFound => StatusCode::NOT_FOUND,
 

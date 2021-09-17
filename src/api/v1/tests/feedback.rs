@@ -18,8 +18,8 @@ use actix_web::http::StatusCode;
 use actix_web::test;
 
 use crate::api::v1::campaign::{CreateReq, CreateResp, GetFeedbackResp};
-use crate::api::v1::feedback::{DescriptionReq, RatingReq, RatingResp};
-use crate::api::v1::ROUTES;
+use crate::api::v1::feedback::{DescriptionReq, RatingReq, RatingResp, URL_MAX_LENGTH};
+use crate::api::v1::{get_random, ROUTES};
 use crate::data::Data;
 use crate::errors::*;
 use crate::*;
@@ -27,12 +27,18 @@ use crate::*;
 use crate::tests::*;
 
 #[actix_rt::test]
-async fn feedback_works() {
+async fn feedback_page_url_length() {
     let data = Data::new().await;
-    const NAME: &str = "testfeedbackuser";
+    const NAME: &str = "testfeedbackurluser";
     const PASSWORD: &str = "longpassword";
-    const EMAIL: &str = "testfeedbackuser@a.com";
-    const CAMPAIGN_NAME: &str = "testfeedbackuser";
+    const EMAIL: &str = "testfeedbackurluser@a.com";
+    const CAMPAIGN_NAME: &str = "testfeedbackurluser";
+    const PAGE_URL: &str = "http://example.com/foo";
+    let url = format!(
+        "{}/{}",
+        PAGE_URL,
+        get_random(URL_MAX_LENGTH - PAGE_URL.len())
+    );
 
     let app = get_app!(data).await;
     delete_user(NAME, &data).await;
@@ -53,10 +59,70 @@ async fn feedback_works() {
     assert_eq!(new_resp.status(), StatusCode::OK);
     let uuid: CreateResp = test::read_body_json(new_resp).await;
 
-    let rating = RatingReq {
+    let mut rating = RatingReq {
         helpful: true,
         description: None,
+        page_url: url,
     };
+
+    let add_feedback_route = ROUTES.feedback.rating.replace("{campaign_id}", &uuid.uuid);
+
+    bad_post_req_test(
+        NAME,
+        PASSWORD,
+        &add_feedback_route,
+        &rating,
+        ServiceError::URLTooLong,
+    )
+    .await;
+
+    rating.page_url = rating.page_url[0..(rating.page_url.len() - 1)].into();
+
+    //    rating.page_url = PAGE_URL.into();
+    let add_feedback_resp = test::call_service(
+        &app,
+        post_request!(&rating, &add_feedback_route)
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
+    assert_eq!(add_feedback_resp.status(), StatusCode::OK);
+}
+
+#[actix_rt::test]
+async fn feedback_works() {
+    let data = Data::new().await;
+    const NAME: &str = "testfeedbackuser";
+    const PASSWORD: &str = "longpassword";
+    const EMAIL: &str = "testfeedbackuser@a.com";
+    const CAMPAIGN_NAME: &str = "testfeedbackuser";
+    const PAGE_URL: &str = "http://example.com/foo";
+
+    let app = get_app!(data).await;
+    delete_user(NAME, &data).await;
+    let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+    let cookies = get_cookie!(signin_resp);
+
+    let new = CreateReq {
+        name: CAMPAIGN_NAME.into(),
+    };
+
+    let new_resp = test::call_service(
+        &app,
+        post_request!(&new, ROUTES.campaign.new)
+            .cookie(cookies.clone())
+            .to_request(),
+    )
+    .await;
+    assert_eq!(new_resp.status(), StatusCode::OK);
+    let uuid: CreateResp = test::read_body_json(new_resp).await;
+
+    let mut rating = RatingReq {
+        helpful: true,
+        description: None,
+        page_url: PAGE_URL.into(),
+    };
+
     bad_post_req_test(
         NAME,
         PASSWORD,
@@ -66,6 +132,27 @@ async fn feedback_works() {
     )
     .await;
 
+    rating.page_url = "foo".into();
+    bad_post_req_test(
+        NAME,
+        PASSWORD,
+        &ROUTES.feedback.rating.replace("{campaign_id}", NAME),
+        &rating,
+        ServiceError::NotAUrl,
+    )
+    .await;
+
+    rating.page_url = get_random(URL_MAX_LENGTH + 1);
+    bad_post_req_test(
+        NAME,
+        PASSWORD,
+        &ROUTES.feedback.rating.replace("{campaign_id}", NAME),
+        &rating,
+        ServiceError::URLTooLong,
+    )
+    .await;
+
+    rating.page_url = PAGE_URL.into();
     let add_feedback_route = ROUTES.feedback.rating.replace("{campaign_id}", &uuid.uuid);
     let add_feedback_resp = test::call_service(
         &app,
