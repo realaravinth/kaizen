@@ -238,10 +238,22 @@ pub async fn list_campaign(
     data: AppData,
 ) -> ServiceResult<impl Responder> {
     let username = id.identity().unwrap();
+    let list_resp = runner::list_campaign_runner(&username, &data).await?;
+
+    Ok(HttpResponse::Ok().json(list_resp))
+}
+
+pub mod runner {
+    use super::*;
+
+pub async fn list_campaign_runner(
+    username: &str,
+    data: &AppData,
+) -> ServiceResult<Vec<ListCampaignResp>> {
 
     struct ListCampaign {
-        pub name: String,
-        pub uuid: Uuid,
+        name: String,
+        uuid: Uuid,
     }
 
     let mut campaigns = sqlx::query_as!(
@@ -259,7 +271,7 @@ pub async fn list_campaign(
                     WHERE
                         name = $1
                 )",
-        &username
+        username
     )
     .fetch_all(&data.db)
     .await?;
@@ -272,5 +284,6 @@ pub async fn list_campaign(
         });
     });
 
-    Ok(HttpResponse::Ok().json(list_resp))
+    Ok(list_resp)
+}
 }

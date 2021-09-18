@@ -16,13 +16,13 @@
  */
 use super::auth::routes::Auth;
 //use super::errors::routes::Errors;
-//use super::panel::routes::Panel;
+use super::panel::routes::Panel;
 pub const ROUTES: Routes = Routes::new();
 
 pub struct Routes {
     pub home: &'static str,
     pub auth: Auth,
-    //  pub panel: Panel,
+    pub panel: Panel,
     //    pub errors: Errors,
     pub about: &'static str,
     pub sitemap: &'static str,
@@ -34,11 +34,11 @@ pub struct Routes {
 
 impl Routes {
     const fn new() -> Routes {
-        //       let panel = Panel::new();
+        let panel = Panel::new();
         let home = "/";
         Routes {
             auth: Auth::new(),
-            //            panel,
+            panel,
             home,
             //    errors: Errors::new(),
             about: "/about",
@@ -50,10 +50,10 @@ impl Routes {
         }
     }
 
-    pub const fn get_sitemap() -> [&'static str; 2] {
+    pub const fn get_sitemap() -> [&'static str; 3] {
         let a = Auth::get_sitemap();
-        //     let p = Panel::get_sitemap();
-        [a[0], a[1]] // p[0], p[1], p[2], p[3], p[4]]
+        let p = Panel::get_sitemap();
+        [a[0], a[1], p[0]] //, p[1], p[2], p[3], p[4]]
     }
 }
 

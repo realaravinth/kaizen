@@ -14,6 +14,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+@import "../components/button";
+
 .auth__body {
 	height: 100vh;
 	max-height: 100vh;
@@ -29,7 +31,7 @@
 }
 
 .auth__form {
-	margin: 20px auto;
+	margin: 15px auto;
 	width: 100%;
 }
 
@@ -59,26 +61,25 @@
 }
 
 .auth__form-submit {
-	border: none;
-
-	background-color: #b4345b;
-	color: #fff;
-	border-radius: 0px;
-
-	padding: 0.1rem 0.75rem;
-	font-weight: 400;
-	text-align: center;
-	line-height: 1.2rem;
-	white-space: nowrap;
-	vertical-align: middle;
-	user-select: none;
-	border: 1px solid transparent;
+	@include button;
 }
 
 .auth__form-submit:hover {
 	cursor: pointer;
 }
+
 .auth__logo {
 	width: 150px;
 	padding-left: 20px;
+}
+
+.auth__demo-user__banner {
+	margin: auto;
+	margin-top: 5px;
+	font-size: 0.8rem;
+	text-align: center;
+}
+
+.auth__demo-user__cred {
+	font-family: monospace, monospace;
 }

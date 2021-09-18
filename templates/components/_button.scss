@@ -14,32 +14,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-@import "./auth/main";
-@import "./components/footer/main";
-@import "./panel/main";
 
-* {
-	margin: 0;
-	padding: 0;
-	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 
-	font-family: "Inter UI", -apple-system, BlinkMacSystemFont, "Roboto",
-		"Segoe UI", Helvetica, Arial, sans-serif;
-}
+@mixin button {
+	border: none;
 
-a {
-	text-decoration: none;
-	color: rgb(0, 86, 179);
-}
+	//	margin: 10px 0;
+	//	background-color: none;
+	background-color: #b4345b;
+	color: #fff;
+	//	text-align: center;
 
-a:hover {
-	text-decoration: underline;
-}
+	border-radius: 0px;
 
-body {
-	max-width: 100vw;
-    overflow-x: hidden;
-	min-height: 100vh;
-	display: flex;
-	flex-direction: column;
+	padding: 0.1rem 0.75rem;
+	font-weight: 400;
+	text-align: center;
+	line-height: 1.2rem;
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+	border: 1px solid transparent;
 }

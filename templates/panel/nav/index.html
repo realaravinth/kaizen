@@ -1,0 +1,40 @@
+<nav class="nav__container">
+  <input type="checkbox" class="nav__toggle" id="nav__toggle" />
+
+  <div class="nav__header">
+    <a class="nav__logo-container" href="/">
+      <img class="nav__logo" src="/logo.svg" alt="logo" alt="WiOS logo" />
+      <p class="nav__logo-text">KAIZEN</p>
+    </a>
+    <label class="nav__hamburger-menu" for="nav__toggle">
+      <span class="nav__hamburger-inner"></span>
+    </label>
+  </div>
+
+  <div class="nav__spacer"></div>
+
+  <div class="nav__link-group">
+    <div class="nav__link-container">
+      <a class="nav__link" rel="noreferrer" href="/home">Home</a>
+    </div>
+
+    <div class="nav__link-container">
+      <a class="nav__link" rel="noreferrer" href="/campaigns">Campaigns</a>
+    </div>
+
+    <div class="nav__link-container">
+      <a class="nav__link" rel="noreferrer" href="/settings">Settings</a>
+    </div>
+
+    <div class="nav__link-container">
+      <a class="nav__link" rel="noreferrer" href="/logout">Log out</a>
+    </div>
+
+    <link rel="stylesheet" href="{{ get_url(path='/nav/main.css') }}" />
+    <link
+      rel="stylesheet"
+      media="screen and (max-width: 1200px)"
+      href="{{ get_url(path='/nav/mobile.css') }}"
+    />
+  </div>
+</nav>
