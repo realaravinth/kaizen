@@ -1,30 +1,31 @@
 <. include!("../../components/base/top.html"); .>
-<main class="auth__container">
-  <img src="/logo.svg" alt="logo" class="auth__logo" />
-  <h1>Confirm access</h1>
-  <form
-    action="<.= crate::V1_API_ROUTES.auth.login .>"
-    action="<.= url .>"
-    class="auth__form"
-    accept-charset="utf-8"
-  >
-    <label class="auth__form-label" for="password">
-      password
-      <input
-        class="auth__form-input"
-        name="password"
-        required
-        id="password"
-        type="password"
-      />
-    </label>
+<body class="auth__body">
+  <main class="auth__container">
+    <img src="<.= crate::assets::LOGO.path .>" alt="logo" class="auth__logo" />
+    <h1>Confirm access</h1>
+    <form
+      action="<.= crate::V1_API_ROUTES.auth.login .>"
+      action="<.= url .>"
+      class="auth__form"
+      accept-charset="utf-8"
+    >
+      <label class="auth__form-label" for="password">
+        password
+        <input
+          class="auth__form-input"
+          name="password"
+          required
+          id="password"
+          type="password"
+        />
+      </label>
 
-    <div class="auth__action">
-      <a href="/forgot-password">Forgot password?</a>
-      <button class="auth__form-submit" type="submit">Authorize</button>
-    </div>
-  </form>
-
-</main>
-<. include!("../../components/footer/index.html"); .> <.
-include!("../../components/base/bottom.html"); .>
+      <div class="auth__action">
+        <a href="/forgot-password">Forgot password?</a>
+        <button class="auth__form-submit" type="submit">Authorize</button>
+      </div>
+    </form>
+  </main>
+  <. include!("../../components/footer/index.html"); .>
+</body>
+<. include!("../../components/base/bottom.html"); .>

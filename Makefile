@@ -41,7 +41,7 @@ release: frontend
 run: frontend
 	cargo run
 
-test: frontend-test frontend
+test: frontend
 	echo 'static/' && tree static || true
 	echo 'tree/' && tree assets || true
 	cargo test --all-features --no-fail-fast

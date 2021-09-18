@@ -1,6 +1,7 @@
 <. include!("../../components/base/top.html"); .>
+<body class="auth__body">
 <main>
-  <img src="/logo.svg" alt="logo" class="auth__logo" />
+  <img src="<.= crate::assets::LOGO.path .>" alt="logo" class="auth__logo" />
   <h1>Join Kaizen</h1>
   <form
     action="<.= crate::V1_API_ROUTES.auth.register .>"
@@ -63,5 +64,6 @@
     <a href="/join"> Create an account </a>
   </p>
 </main>
-<. include!("../../components/footer/index.html"); .> <.
-include!("../../components/base/bottom.html"); .>
+<. include!("../../components/footer/index.html"); .> 
+</body>
+<. include!("../../components/base/bottom.html"); .>

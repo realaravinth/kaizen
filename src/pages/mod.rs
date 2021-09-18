@@ -30,16 +30,16 @@ pub fn services(cfg: &mut ServiceConfig) {
     //    errors::services(cfg);
 }
 
-//#[cfg(not(tarpaulin_include))]
-//#[cfg(test)]
-//mod tests {
-//    use actix_web::http::StatusCode;
-//    use actix_web::test;
-//
-//    use super::*;
-//    use crate::tests::*;
-//    use crate::*;
-//
+#[cfg(not(tarpaulin_include))]
+#[cfg(test)]
+mod tests {
+    use actix_web::http::StatusCode;
+    use actix_web::test;
+
+    use super::*;
+    use crate::tests::*;
+    use crate::*;
+
 //    #[actix_rt::test]
 //    async fn protected_pages_templates_work() {
 //        const NAME: &str = "templateuser";
@@ -80,16 +80,16 @@ pub fn services(cfg: &mut ServiceConfig) {
 //        delete_user(NAME, &data).await;
 //    }
 //
-//    #[actix_rt::test]
-//    async fn public_pages_tempaltes_work() {
-//        let app = test::init_service(App::new().configure(services)).await;
-//        let urls = vec![PAGES.auth.login, PAGES.auth.join, PAGES.sitemap];
-//
-//        for url in urls.iter() {
-//            let resp =
-//                test::call_service(&app, test::TestRequest::get().uri(url).to_request()).await;
-//
-//            assert_eq!(resp.status(), StatusCode::OK);
-//        }
-//    }
-//}
+    #[actix_rt::test]
+    async fn public_pages_tempaltes_work() {
+        let app = test::init_service(App::new().configure(services)).await;
+        let urls = vec![PAGES.auth.login, PAGES.auth.join];//, PAGES.sitemap];
+
+        for url in urls.iter() {
+            let resp =
+                test::call_service(&app, test::TestRequest::get().uri(url).to_request()).await;
+
+            assert_eq!(resp.status(), StatusCode::OK);
+        }
+    }
+}

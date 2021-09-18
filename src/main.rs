@@ -53,8 +53,8 @@ lazy_static! {
 
     pub static ref CSS: &'static str =
         FILES.get("./static/cache/bundle/css/main.css").unwrap();
-    pub static ref MOBILE_CSS: &'static str =
-        FILES.get("./static/cache/bundle/css/mobile.css").unwrap();
+//    pub static ref MOBILE_CSS: &'static str =
+//        FILES.get("./static/cache/bundle/css/mobile.css").unwrap();
 
     /// points to source files matching build commit
     pub static ref SOURCE_FILES_OF_INSTANCE: String = {
@@ -117,9 +117,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(actix_middleware::NormalizePath::new(
                 actix_middleware::TrailingSlash::Trim,
             ))
+            .configure(pages::services)
             .configure(api::v1::services)
             .configure(static_assets::services)
-            .configure(pages::services)
             .app_data(get_json_err())
     })
     .bind(SETTINGS.server.get_ip())
