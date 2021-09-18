@@ -242,6 +242,8 @@
 <span id="242">242</span>
 <span id="243">243</span>
 <span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -290,7 +292,9 @@
     <span class="ident">NotAUrl</span>,
     <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;The value you entered for ID is not a valid ID&quot;</span>)]</span> <span class="comment">//405j</span>
     <span class="ident">NotAnId</span>,
-    <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;URL too long, maximum length can&#39;t be greater then 2048 characters&quot;</span>)]</span> <span class="comment">//405</span>
+    <span class="attribute">#[<span class="ident">display</span>(
+        <span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;URL too long, maximum length can&#39;t be greater then 2048 characters&quot;</span>
+    )]</span> <span class="comment">//405</span>
     <span class="ident">URLTooLong</span>,
 
     <span class="attribute">#[<span class="ident">display</span>(<span class="ident">fmt</span> <span class="op">=</span> <span class="string">&quot;Wrong password&quot;</span>)]</span>

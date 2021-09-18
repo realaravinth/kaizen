@@ -79,29 +79,24 @@
 <span id="79">79</span>
 <span id="80">80</span>
 <span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
 </pre><pre class="rust">
 <span class="comment">/*
-* Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
-*/</span>
-
+ * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+ */</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::type_complexity</span>)]</span>
-<span class="comment">//use std::task::{Context, Poll};</span>
 
 <span class="kw">use</span> <span class="ident">actix_http::body::AnyBody</span>;
 <span class="kw">use</span> <span class="ident">actix_identity::Identity</span>;
@@ -111,7 +106,7 @@
 
 <span class="kw">use</span> <span class="ident">futures::future</span>::{<span class="ident">ok</span>, <span class="ident">Either</span>, <span class="ident">Ready</span>};
 
-<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AUTH</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;/login&quot;</span>;
+<span class="kw">pub</span> <span class="kw">const</span> <span class="ident">AUTH</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="kw">crate</span><span class="ident">::PAGES</span>.<span class="ident">auth</span>.<span class="ident">login</span>;
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">CheckLogin</span>;
 
@@ -160,7 +155,6 @@
             <span class="kw">let</span> <span class="ident">req</span> <span class="op">=</span> <span class="ident">ServiceRequest::from_parts</span>(<span class="ident">r</span>, <span class="ident">pl</span>); <span class="comment">//.ok().unwrap();</span>
             <span class="ident">Either::Right</span>(<span class="ident">ok</span>(<span class="ident">req</span>.<span class="ident">into_response</span>(
                 <span class="ident">HttpResponse::Found</span>()
-                    <span class="comment">//.insert_header((http::header::LOCATION, PAGES.auth.login))</span>
                     .<span class="ident">insert_header</span>((<span class="ident">http::header::LOCATION</span>, <span class="ident">AUTH</span>))
                     .<span class="ident">finish</span>(),
             )))
