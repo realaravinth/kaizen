@@ -54,6 +54,8 @@ jobs:
           profile: minimal
           override: true
 
+      - name: build sass
+        run: make frontend
 
       - name: Run migrations
         run: make migrate

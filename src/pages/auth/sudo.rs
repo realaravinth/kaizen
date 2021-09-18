@@ -14,33 +14,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use cache_buster::Files;
 
-pub struct FileMap {
-    pub files: Files,
+use std::fmt::Display;
+
+use sailfish::runtime::Render;
+use sailfish::TemplateOnce;
+
+#[derive(Clone, TemplateOnce)]
+#[template(path = "auth/sudo/index.html")]
+pub struct SudoPage<'a, K, V>
+where
+    K: Display + Render,
+    V: Display + Render,
+{
+    url: &'a str,
+    _data: Option<Vec<(K, V)>>,
 }
 
-impl FileMap {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let map = include_str!("../cache_buster_data.json");
-        let files = Files::new(map);
-        Self { files }
-    }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
-        let file_path = self.files.get_full_path(path);
-        file_path.map(|file_path| &file_path[1..])
-    }
-}
+pub const PAGE: &str = "Confirm Access";
 
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn filemap_works() {
-        let files = super::FileMap::new();
-        let css = files.get("./static/cache/img/logo.svg").unwrap();
-        println!("{}", css);
-        assert!(css.contains("/assets/img/logo"));
+impl<'a, K, V> SudoPage<'a, K, V>
+where
+    K: Display + Render,
+    V: Display + Render,
+{
+    pub fn new(url: &'a str, _data: Option<Vec<(K, V)>>) -> Self {
+        Self { url, _data }
     }
 }

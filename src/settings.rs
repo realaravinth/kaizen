@@ -28,6 +28,7 @@ pub struct Server {
     pub domain: String,
     pub cookie_secret: String,
     pub ip: String,
+    pub proxy_has_tls: bool,
 }
 
 impl Server {
@@ -75,6 +76,7 @@ pub struct Database {
 pub struct Settings {
     pub debug: bool,
     pub allow_registration: bool,
+    pub allow_demo: bool,
     pub database: Database,
     pub server: Server,
     pub source_code: String,

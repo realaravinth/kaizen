@@ -37,7 +37,7 @@ pub mod assets {
     lazy_static! {
         pub static ref LOGO: Img = Img {
             path: FILES.get("./static/cache/img/logo.svg").unwrap(),
-            name: "Logo"
+            name: "Kaizen logo"
         };
     }
 }
@@ -115,19 +115,20 @@ mod tests {
     async fn static_assets_work() {
         let app = get_app!().await;
 
-        let resp = test::call_service(
-            &app,
-            test::TestRequest::get().uri(assets::LOGO.path).to_request(),
-        )
-        .await;
-        assert_eq!(resp.status(), StatusCode::OK);
+        for file in [assets::LOGO.path, &*crate::CSS].iter() {
+            let resp = test::call_service(
+                &app,
+                test::TestRequest::get().uri(file).to_request(),
+            )
+            .await;
+            assert_eq!(resp.status(), StatusCode::OK);
+        }
     }
 
     #[actix_rt::test]
     async fn favicons_work() {
         assert!(Favicons::get("favicon.ico").is_some());
 
-        //let app = test::init_service(App::new().configure(services)).await;
         let app = get_app!().await;
 
         let resp = test::call_service(

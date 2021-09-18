@@ -128,7 +128,10 @@ pub mod runners {
         }
     }
 
-    pub async fn register_runner(payload: &Register, data: &AppData) -> ServiceResult<()> {
+    pub async fn register_runner(
+        payload: &Register,
+        data: &AppData,
+    ) -> ServiceResult<()> {
         if !crate::SETTINGS.allow_registration {
             return Err(ServiceError::ClosedForRegistration);
         }

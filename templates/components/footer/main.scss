@@ -14,33 +14,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use cache_buster::Files;
 
-pub struct FileMap {
-    pub files: Files,
+.footer {
+	font-size: 0.8rem;
+	padding: 0px 20px;
 }
 
-impl FileMap {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let map = include_str!("../cache_buster_data.json");
-        let files = Files::new(map);
-        Self { files }
-    }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
-        let file_path = self.files.get_full_path(path);
-        file_path.map(|file_path| &file_path[1..])
-    }
+.footer__section {
+	display: inline;
+	float: right;
 }
 
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn filemap_works() {
-        let files = super::FileMap::new();
-        let css = files.get("./static/cache/img/logo.svg").unwrap();
-        println!("{}", css);
-        assert!(css.contains("/assets/img/logo"));
-    }
+.footer__item {
+	display: inline;
+	list-style: none;
+	padding: 10px;
 }

@@ -14,33 +14,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use cache_buster::Files;
 
-pub struct FileMap {
-    pub files: Files,
+use actix_web::{HttpResponse, Responder};
+use lazy_static::lazy_static;
+use my_codegen::get;
+use sailfish::TemplateOnce;
+
+use crate::PAGES;
+
+#[derive(Clone, TemplateOnce)]
+#[template(path = "auth/login/index.html")]
+struct IndexPage;
+
+const PAGE: &str = "Login";
+
+impl Default for IndexPage {
+    fn default() -> Self {
+        IndexPage
+    }
 }
 
-impl FileMap {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let map = include_str!("../cache_buster_data.json");
-        let files = Files::new(map);
-        Self { files }
-    }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
-        let file_path = self.files.get_full_path(path);
-        file_path.map(|file_path| &file_path[1..])
-    }
+lazy_static! {
+    static ref INDEX: String = IndexPage::default().render_once().unwrap();
 }
 
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn filemap_works() {
-        let files = super::FileMap::new();
-        let css = files.get("./static/cache/img/logo.svg").unwrap();
-        println!("{}", css);
-        assert!(css.contains("/assets/img/logo"));
-    }
+#[get(path = "PAGES.auth.login")]
+pub async fn login() -> impl Responder {
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(&*INDEX)
 }

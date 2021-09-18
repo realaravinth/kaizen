@@ -14,33 +14,31 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use cache_buster::Files;
+pub mod join;
+pub mod login;
+pub mod sudo;
 
-pub struct FileMap {
-    pub files: Files,
+pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
+    cfg.service(login::login);
+    cfg.service(join::join);
 }
 
-impl FileMap {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let map = include_str!("../cache_buster_data.json");
-        let files = Files::new(map);
-        Self { files }
+pub mod routes {
+    pub struct Auth {
+        pub login: &'static str,
+        pub join: &'static str,
     }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
-        let file_path = self.files.get_full_path(path);
-        file_path.map(|file_path| &file_path[1..])
-    }
-}
+    impl Auth {
+        pub const fn new() -> Auth {
+            Auth {
+                login: "/login",
+                join: "/join",
+            }
+        }
 
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn filemap_works() {
-        let files = super::FileMap::new();
-        let css = files.get("./static/cache/img/logo.svg").unwrap();
-        println!("{}", css);
-        assert!(css.contains("/assets/img/logo"));
+        pub const fn get_sitemap() -> [&'static str; 2] {
+            const AUTH: Auth = Auth::new();
+            [AUTH.login, AUTH.join]
+        }
     }
 }

@@ -1,0 +1,67 @@
+<. include!("../../components/base/top.html"); .>
+<main>
+  <img src="/logo.svg" alt="logo" class="auth__logo" />
+  <h1>Join Kaizen</h1>
+  <form
+    action="<.= crate::V1_API_ROUTES.auth.register .>"
+    method="POST"
+    class="auth__form"
+    accept-charset="utf-8"
+  >
+    <label class="auth__form-label" for="username">
+      Username
+      <input
+        class="auth__form-input"
+        name="username"
+        required
+        id="username"
+        type="text"
+      />
+    </label>
+
+    <label class="auth__form-label" for="email">
+      Email(optional)
+      <input
+        class="auth__form-input"
+        name="email"
+        required
+        id="email"
+        type="email"
+      />
+    </label>
+
+    <label class="auth__form-label" for="password">
+      password
+      <input
+        class="auth__form-input"
+        name="password"
+        required
+        id="password"
+        type="password"
+      />
+    </label>
+
+    <label class="auth__form-label" for="password-check">
+      Re-enter Password
+      <input
+        class="auth__form-input"
+        name="password-check"
+        required
+        id="password-check"
+        type="password"
+      />
+    </label>
+
+    <div class="auth__action">
+      <a href="/forgot-password">Forgot password?</a>
+      <button class="auth__form-submit" type="submit">Login</button>
+    </div>
+  </form>
+
+  <p class="auth__alt-action">
+    New to Kaizen?
+    <a href="/join"> Create an account </a>
+  </p>
+</main>
+<. include!("../../components/footer/index.html"); .> <.
+include!("../../components/base/bottom.html"); .>

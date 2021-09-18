@@ -14,33 +14,29 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use cache_buster::Files;
+use actix_web::{HttpResponse, Responder};
+use lazy_static::lazy_static;
+use sailfish::TemplateOnce;
 
-pub struct FileMap {
-    pub files: Files,
-}
+#[derive(Clone, TemplateOnce)]
+#[template(path = "auth/join/index.html")]
+struct IndexPage;
 
-impl FileMap {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let map = include_str!("../cache_buster_data.json");
-        let files = Files::new(map);
-        Self { files }
-    }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
-        let file_path = self.files.get_full_path(path);
-        file_path.map(|file_path| &file_path[1..])
+const PAGE: &str = "Join";
+
+impl Default for IndexPage {
+    fn default() -> Self {
+        IndexPage
     }
 }
 
-#[cfg(test)]
-mod tests {
+lazy_static! {
+    static ref INDEX: String = IndexPage::default().render_once().unwrap();
+}
 
-    #[test]
-    fn filemap_works() {
-        let files = super::FileMap::new();
-        let css = files.get("./static/cache/img/logo.svg").unwrap();
-        println!("{}", css);
-        assert!(css.contains("/assets/img/logo"));
-    }
+#[my_codegen::get(path = "crate::PAGES.auth.join")]
+pub async fn join() -> impl Responder {
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(&*INDEX)
 }

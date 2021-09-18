@@ -67,7 +67,10 @@ pub struct CreateResp {
     pub uuid: String,
 }
 
-#[my_codegen::post(path = "crate::V1_API_ROUTES.campaign.new", wrap = "crate::CheckLogin")]
+#[my_codegen::post(
+    path = "crate::V1_API_ROUTES.campaign.new",
+    wrap = "crate::CheckLogin"
+)]
 pub async fn new(
     id: Identity,
     payload: web::Json<CreateReq>,
@@ -230,7 +233,10 @@ pub struct ListCampaignResp {
     path = "crate::V1_API_ROUTES.campaign.list",
     wrap = "crate::CheckLogin"
 )]
-pub async fn list_campaign(id: Identity, data: AppData) -> ServiceResult<impl Responder> {
+pub async fn list_campaign(
+    id: Identity,
+    data: AppData,
+) -> ServiceResult<impl Responder> {
     let username = id.identity().unwrap();
 
     struct ListCampaign {

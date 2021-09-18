@@ -51,7 +51,10 @@ async fn get_secret(id: Identity, data: AppData) -> ServiceResult<impl Responder
     path = "crate::V1_API_ROUTES.account.update_secret",
     wrap = "crate::CheckLogin"
 )]
-async fn update_user_secret(id: Identity, data: AppData) -> ServiceResult<impl Responder> {
+async fn update_user_secret(
+    id: Identity,
+    data: AppData,
+) -> ServiceResult<impl Responder> {
     let username = id.identity().unwrap();
 
     let mut secret;

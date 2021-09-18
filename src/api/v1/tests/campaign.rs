@@ -90,6 +90,7 @@ async fn campaign_works() {
     )
     .await;
     assert_eq!(list_resp_post_deletion.status(), StatusCode::OK);
-    let list: Vec<ListCampaignResp> = test::read_body_json(list_resp_post_deletion).await;
+    let list: Vec<ListCampaignResp> =
+        test::read_body_json(list_resp_post_deletion).await;
     assert!(!list.iter().any(|c| c.name == CAMPAIGN_NAME));
 }

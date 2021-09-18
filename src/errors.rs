@@ -45,7 +45,9 @@ pub enum ServiceError {
     NotAUrl,
     #[display(fmt = "The value you entered for ID is not a valid ID")] //405j
     NotAnId,
-    #[display(fmt = "URL too long, maximum length can't be greater then 2048 characters")] //405
+    #[display(
+        fmt = "URL too long, maximum length can't be greater then 2048 characters"
+    )] //405
     URLTooLong,
 
     #[display(fmt = "Wrong password")]

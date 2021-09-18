@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2021  Aravinth Manivannan <realaravinth@batsense.net>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+.auth__container {
+	width: 380px;
+	align-items: center;
+	margin: auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.auth__form {
+	margin: 20px auto;
+	width: 100%;
+}
+
+.auth__form-label {
+	display: block;
+	margin: 10px 0;
+}
+
+.auth__form-input {
+	display: block;
+	margin: 10px 0;
+	width: 100%;
+	height: 35px;
+	border-radius: 0px;
+	border: 1px solid grey;
+}
+
+.auth__action {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.auth__alt-action {
+	font-size: 0.9rem;
+}
+
+.auth__form-submit {
+	border: none;
+
+	background-color: #b4345b;
+	color: #fff;
+	border-radius: 0px;
+
+	padding: 0.1rem 0.75rem;
+	font-weight: 400;
+	text-align: center;
+	line-height: 1.2rem;
+	white-space: nowrap;
+	vertical-align: middle;
+	user-select: none;
+	border: 1px solid transparent;
+}
+
+.auth__form-submit:hover {
+	cursor: pointer;
+}
+.auth__logo {
+	width: 150px;
+	padding-left: 20px;
+}

@@ -2,7 +2,8 @@ use std::sync::Arc;
 
 use actix_web::test;
 use actix_web::{
-    dev::ServiceResponse, error::ResponseError, http::StatusCode, middleware as actix_middleware,
+    dev::ServiceResponse, error::ResponseError, http::StatusCode,
+    middleware as actix_middleware,
 };
 use serde::Serialize;
 
@@ -47,7 +48,8 @@ macro_rules! post_request {
 macro_rules! get_works {
     ($app:expr,$route:expr ) => {
         let list_sitekey_resp =
-            test::call_service(&$app, test::TestRequest::get().uri($route).to_request()).await;
+            test::call_service(&$app, test::TestRequest::get().uri($route).to_request())
+                .await;
         assert_eq!(list_sitekey_resp.status(), StatusCode::OK);
     };
 }
@@ -62,6 +64,7 @@ macro_rules! get_app {
                     actix_middleware::TrailingSlash::Trim,
                 ))
                 .configure(crate::api::v1::services)
+                .configure(pages::services)
                 .configure(crate::static_assets::services),
         )
     };
@@ -74,6 +77,7 @@ macro_rules! get_app {
                 ))
                 .configure(crate::api::v1::services)
                 .configure(crate::static_assets::services)
+                .configure(pages::services)
                 .app_data(actix_web::web::Data::new($data.clone())),
         )
     };
@@ -102,7 +106,8 @@ pub async fn register(name: &str, email: &str, password: &str) {
         email: Some(email.into()),
     };
     let resp =
-        test::call_service(&app, post_request!(&msg, ROUTES.auth.register).to_request()).await;
+        test::call_service(&app, post_request!(&msg, ROUTES.auth.register).to_request())
+            .await;
     assert_eq!(resp.status(), StatusCode::OK);
 }
 
@@ -117,7 +122,8 @@ pub async fn signin(name: &str, password: &str) -> (Arc<Data>, Login, ServiceRes
         password: password.into(),
     };
     let signin_resp =
-        test::call_service(&app, post_request!(&creds, ROUTES.auth.login).to_request()).await;
+        test::call_service(&app, post_request!(&creds, ROUTES.auth.login).to_request())
+            .await;
     assert_eq!(signin_resp.status(), StatusCode::OK);
     (data, creds, signin_resp)
 }

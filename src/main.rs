@@ -16,20 +16,22 @@
  */
 use std::env;
 use std::sync::Arc;
+use std::time::Duration;
 
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{
-    error::InternalError, http::StatusCode, middleware as actix_middleware, web::JsonConfig, App,
-    HttpServer,
+    error::InternalError, http::StatusCode, middleware as actix_middleware,
+    web::JsonConfig, App, HttpServer,
 };
 use lazy_static::lazy_static;
 use log::info;
 
-//mod api;
 mod api;
 mod data;
+mod demo;
 mod errors;
 mod middleware;
+mod pages;
 mod settings;
 mod static_assets;
 #[cfg(test)]
@@ -39,13 +41,32 @@ mod tests;
 pub use crate::data::Data;
 pub use api::v1::ROUTES as V1_API_ROUTES;
 pub use middleware::auth::CheckLogin;
+pub use pages::routes::ROUTES as PAGES;
 pub use settings::Settings;
+pub use static_assets::static_files::assets;
 
 use static_assets::FileMap;
 
 lazy_static! {
     pub static ref SETTINGS: Settings = Settings::new().unwrap();
     pub static ref FILES: FileMap = FileMap::new();
+
+    pub static ref CSS: &'static str =
+        FILES.get("./static/cache/bundle/css/main.css").unwrap();
+    pub static ref MOBILE_CSS: &'static str =
+        FILES.get("./static/cache/bundle/css/mobile.css").unwrap();
+
+    /// points to source files matching build commit
+    pub static ref SOURCE_FILES_OF_INSTANCE: String = {
+        let mut url = SETTINGS.source_code.clone();
+        if !url.ends_with('/') {
+            url.push('/');
+        }
+        let mut  base = url::Url::parse(&url).unwrap();
+        base =  base.join("tree/").unwrap();
+        base =  base.join(GIT_COMMIT_HASH).unwrap();
+        base.into()
+    };
 }
 
 pub const CACHE_AGE: u32 = 604800;
@@ -65,6 +86,7 @@ async fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "info");
 
     pretty_env_logger::init();
+
     info!(
         "{}: {}.\nFor more information, see: {}\nBuild info:\nVersion: {} commit: {}",
         PKG_NAME, PKG_DESCRIPTION, PKG_HOMEPAGE, VERSION, GIT_COMMIT_HASH
@@ -73,6 +95,12 @@ async fn main() -> std::io::Result<()> {
     let data = Data::new().await;
     sqlx::migrate!("./migrations/").run(&data.db).await.unwrap();
     let data = actix_web::web::Data::new(data);
+
+    if SETTINGS.allow_demo && SETTINGS.allow_registration {
+        demo::run(data.clone(), Duration::from_secs(60 * 30))
+            .await
+            .unwrap();
+    }
 
     println!("Starting server on: http://{}", SETTINGS.server.get_ip());
 
@@ -91,6 +119,7 @@ async fn main() -> std::io::Result<()> {
             ))
             .configure(api::v1::services)
             .configure(static_assets::services)
+            .configure(pages::services)
             .app_data(get_json_err())
     })
     .bind(SETTINGS.server.get_ip())

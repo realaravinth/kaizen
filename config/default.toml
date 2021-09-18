@@ -1,5 +1,6 @@
 debug = true
 allow_registration = true
+allow_demo = true
 source_code = "https://github.com/realaravinth/kaizen"
 password = "password"
 
@@ -15,6 +16,7 @@ ip= "0.0.0.0"
 # enter your hostname, eg: example.com
 domain = "localhost"
 allow_registration = true
+proxy_has_tls = false
 
 [database]
 # This section deals with the database location and how to access it

@@ -45,7 +45,8 @@ async fn auth_works() {
         email: None,
     };
     let resp =
-        test::call_service(&app, post_request!(&msg, ROUTES.auth.register).to_request()).await;
+        test::call_service(&app, post_request!(&msg, ROUTES.auth.register).to_request())
+            .await;
     assert_eq!(resp.status(), StatusCode::OK);
     // delete user
     delete_user(NAME, &data).await;

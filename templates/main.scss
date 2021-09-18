@@ -14,33 +14,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use cache_buster::Files;
+@import "./auth/main";
+@import "./components/footer/main";
 
-pub struct FileMap {
-    pub files: Files,
+* {
+	margin: 0;
+	padding: 0;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+	font-family: "Inter UI", -apple-system, BlinkMacSystemFont, "Roboto",
+		"Segoe UI", Helvetica, Arial, sans-serif;
 }
 
-impl FileMap {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
-        let map = include_str!("../cache_buster_data.json");
-        let files = Files::new(map);
-        Self { files }
-    }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
-        let file_path = self.files.get_full_path(path);
-        file_path.map(|file_path| &file_path[1..])
-    }
+a {
+	text-decoration: none;
+	color: rgb(0, 86, 179);
 }
 
-#[cfg(test)]
-mod tests {
+a:hover {
+	text-decoration: underline;
+}
 
-    #[test]
-    fn filemap_works() {
-        let files = super::FileMap::new();
-        let css = files.get("./static/cache/img/logo.svg").unwrap();
-        println!("{}", css);
-        assert!(css.contains("/assets/img/logo"));
-    }
+body {
+	width: 100vw;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }

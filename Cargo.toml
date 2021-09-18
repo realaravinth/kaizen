@@ -62,7 +62,9 @@ mime = "0.3.16"
 
 openssl = { version = "0.10.29", features = ["vendored"] }
 
-tera = { version = "1", default-features = false }
+sailfish = "0.3.2"
+
+tokio = "1.11.0"
 
 [build-dependencies]
 sqlx = { version = "0.5.5", features = [ "runtime-actix-rustls", "uuid", "postgres", "time", "offline" ] }

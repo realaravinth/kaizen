@@ -1,22 +1,20 @@
 /*
-* Copyright (C) 2021  Aravinth Manivannan <realaravinth@batsense.net>
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as
-* published by the Free Software Foundation, either version 3 of the
-* License, or (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
+ * Copyright (C) 2021  Aravinth Manivannan <realaravinth@batsense.net>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 #![allow(clippy::type_complexity)]
-//use std::task::{Context, Poll};
 
 use actix_http::body::AnyBody;
 use actix_identity::Identity;
@@ -26,7 +24,7 @@ use actix_web::{http, Error, FromRequest, HttpResponse};
 
 use futures::future::{ok, Either, Ready};
 
-pub const AUTH: &str = "/login";
+pub const AUTH: &str = crate::PAGES.auth.login;
 
 pub struct CheckLogin;
 
@@ -75,7 +73,6 @@ where
             let req = ServiceRequest::from_parts(r, pl); //.ok().unwrap();
             Either::Right(ok(req.into_response(
                 HttpResponse::Found()
-                    //.insert_header((http::header::LOCATION, PAGES.auth.login))
                     .insert_header((http::header::LOCATION, AUTH))
                     .finish(),
             )))
