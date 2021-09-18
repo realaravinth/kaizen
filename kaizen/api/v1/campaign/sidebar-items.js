@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["services",""]],"mod":[["routes",""]],"struct":[["CreateReq",""],["CreateResp",""],["GetFeedbackResp",""],["ListCampaignResp",""],["delete",""],["get_feedback",""],["list_campaign",""],["new",""]]});
+initSidebarItems({"fn":[["services",""]],"mod":[["routes",""],["runner",""]],"struct":[["CreateReq",""],["CreateResp",""],["GetFeedbackResp",""],["ListCampaignResp",""],["delete",""],["get_feedback",""],["list_campaign",""],["new",""]]});

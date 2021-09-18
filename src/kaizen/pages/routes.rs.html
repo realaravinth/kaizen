@@ -84,15 +84,15 @@
  * along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
  */</span>
 <span class="kw">use</span> <span class="kw">super</span><span class="ident">::auth::routes::Auth</span>;
-<span class="comment">//use super::errors::routes::Errors;</span>
-<span class="comment">//use super::panel::routes::Panel;</span>
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::errors::routes::Errors</span>;
+<span class="kw">use</span> <span class="kw">super</span><span class="ident">::panel::routes::Panel</span>;
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">ROUTES</span>: <span class="ident">Routes</span> <span class="op">=</span> <span class="ident">Routes::new</span>();
 
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Routes</span> {
     <span class="kw">pub</span> <span class="ident">home</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
     <span class="kw">pub</span> <span class="ident">auth</span>: <span class="ident">Auth</span>,
-    <span class="comment">//  pub panel: Panel,</span>
-    <span class="comment">//    pub errors: Errors,</span>
+    <span class="kw">pub</span> <span class="ident">panel</span>: <span class="ident">Panel</span>,
+    <span class="kw">pub</span> <span class="ident">errors</span>: <span class="ident">Errors</span>,
     <span class="kw">pub</span> <span class="ident">about</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
     <span class="kw">pub</span> <span class="ident">sitemap</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
     <span class="kw">pub</span> <span class="ident">thanks</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
@@ -103,13 +103,13 @@
 
 <span class="kw">impl</span> <span class="ident">Routes</span> {
     <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Routes</span> {
-        <span class="comment">//       let panel = Panel::new();</span>
-        <span class="kw">let</span> <span class="ident">home</span> <span class="op">=</span> <span class="string">&quot;/&quot;</span>;
+        <span class="kw">let</span> <span class="ident">panel</span> <span class="op">=</span> <span class="ident">Panel::new</span>();
+        <span class="kw">let</span> <span class="ident">home</span> <span class="op">=</span> <span class="ident">panel</span>.<span class="ident">home</span>;
         <span class="ident">Routes</span> {
             <span class="ident">auth</span>: <span class="ident">Auth::new</span>(),
-            <span class="comment">//            panel,</span>
+            <span class="ident">panel</span>,
             <span class="ident">home</span>,
-            <span class="comment">//    errors: Errors::new(),</span>
+            <span class="ident">errors</span>: <span class="ident">Errors::new</span>(),
             <span class="ident">about</span>: <span class="string">&quot;/about&quot;</span>,
             <span class="ident">sitemap</span>: <span class="string">&quot;/sitemap.xml&quot;</span>,
             <span class="ident">thanks</span>: <span class="string">&quot;/thanks&quot;</span>,
@@ -119,10 +119,10 @@
         }
     }
 
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">get_sitemap</span>() <span class="op">-</span><span class="op">&gt;</span> [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">2</span>] {
+    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">get_sitemap</span>() <span class="op">-</span><span class="op">&gt;</span> [<span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>; <span class="number">3</span>] {
         <span class="kw">let</span> <span class="ident">a</span> <span class="op">=</span> <span class="ident">Auth::get_sitemap</span>();
-        <span class="comment">//     let p = Panel::get_sitemap();</span>
-        [<span class="ident">a</span>[<span class="number">0</span>], <span class="ident">a</span>[<span class="number">1</span>]] <span class="comment">// p[0], p[1], p[2], p[3], p[4]]</span>
+        <span class="kw">let</span> <span class="ident">p</span> <span class="op">=</span> <span class="ident">Panel::get_sitemap</span>();
+        [<span class="ident">a</span>[<span class="number">0</span>], <span class="ident">a</span>[<span class="number">1</span>], <span class="ident">p</span>[<span class="number">0</span>]] <span class="comment">//, p[1], p[2], p[3], p[4]]</span>
     }
 }
 

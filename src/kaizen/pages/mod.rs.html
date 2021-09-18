@@ -93,7 +93,6 @@
 <span id="93">93</span>
 <span id="94">94</span>
 <span id="95">95</span>
-<span id="96">96</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -114,8 +113,8 @@
 <span class="kw">use</span> <span class="ident">actix_web::web::ServiceConfig</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">auth</span>;
-<span class="comment">//pub mod errors;</span>
-<span class="comment">//mod panel;</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">errors</span>;
+<span class="kw">mod</span> <span class="ident">panel</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">routes</span>;
 <span class="comment">//mod sitemap;</span>
 
@@ -123,8 +122,8 @@
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">services</span>(<span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ServiceConfig</span>) {
     <span class="ident">auth::services</span>(<span class="ident">cfg</span>);
-    <span class="comment">//   panel::services(cfg);</span>
-    <span class="comment">//    errors::services(cfg);</span>
+    <span class="ident">panel::services</span>(<span class="ident">cfg</span>);
+    <span class="ident">errors::services</span>(<span class="ident">cfg</span>);
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">tarpaulin_include</span>))]</span>
@@ -137,46 +136,45 @@
     <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tests</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="kw-2">*</span>;
 
-    <span class="comment">//    #[actix_rt::test]</span>
-    <span class="comment">//    async fn protected_pages_templates_work() {</span>
-    <span class="comment">//        const NAME: &amp;str = &quot;templateuser&quot;;</span>
-    <span class="comment">//        const PASSWORD: &amp;str = &quot;longpassword&quot;;</span>
-    <span class="comment">//        const EMAIL: &amp;str = &quot;templateuser@a.com&quot;;</span>
-    <span class="comment">//</span>
-    <span class="comment">//        {</span>
-    <span class="comment">//            let data = Data::new().await;</span>
-    <span class="comment">//            delete_user(NAME, &amp;data).await;</span>
-    <span class="comment">//        }</span>
-    <span class="comment">//</span>
-    <span class="comment">//        let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;</span>
-    <span class="comment">//        let cookies = get_cookie!(signin_resp);</span>
-    <span class="comment">//</span>
-    <span class="comment">//        let app = get_app!(data).await;</span>
-    <span class="comment">//</span>
-    <span class="comment">//        let edit_sitekey_url = format!(&quot;/sitekey/{}/edit&quot;, &amp;token_key.key);</span>
-    <span class="comment">//        let delete_sitekey_url = format!(&quot;/sitekey/{}/delete&quot;, &amp;token_key.key);</span>
-    <span class="comment">//        let urls = vec![PAGES.home, &amp;delete_sitekey_url, &amp;edit_sitekey_url];</span>
-    <span class="comment">//</span>
-    <span class="comment">//        for url in urls.iter() {</span>
-    <span class="comment">//            let resp =</span>
-    <span class="comment">//                test::call_service(&amp;app, test::TestRequest::get().uri(url).to_request()).await;</span>
-    <span class="comment">//            assert_eq!(resp.status(), StatusCode::FOUND);</span>
-    <span class="comment">//</span>
-    <span class="comment">//            let authenticated_resp = test::call_service(</span>
-    <span class="comment">//                &amp;app,</span>
-    <span class="comment">//                test::TestRequest::get()</span>
-    <span class="comment">//                    .uri(url)</span>
-    <span class="comment">//                    .cookie(cookies.clone())</span>
-    <span class="comment">//                    .to_request(),</span>
-    <span class="comment">//            )</span>
-    <span class="comment">//            .await;</span>
-    <span class="comment">//</span>
-    <span class="comment">//            assert_eq!(authenticated_resp.status(), StatusCode::OK);</span>
-    <span class="comment">//        }</span>
-    <span class="comment">//</span>
-    <span class="comment">//        delete_user(NAME, &amp;data).await;</span>
-    <span class="comment">//    }</span>
-    <span class="comment">//</span>
+    <span class="attribute">#[<span class="ident">actix_rt::test</span>]</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">protected_pages_templates_work</span>() {
+        <span class="kw">const</span> <span class="ident">NAME</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;templateuser&quot;</span>;
+        <span class="kw">const</span> <span class="ident">PASSWORD</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;longpassword&quot;</span>;
+        <span class="kw">const</span> <span class="ident">EMAIL</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;templateuser@a.com&quot;</span>;
+
+        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="ident">Data::new</span>().<span class="kw">await</span>;
+        {
+            <span class="ident">delete_user</span>(<span class="ident">NAME</span>, <span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="kw">await</span>;
+        }
+
+        <span class="kw">let</span> (<span class="kw">_</span>, <span class="kw">_</span>, <span class="ident">signin_resp</span>) <span class="op">=</span> <span class="ident">register_and_signin</span>(<span class="ident">NAME</span>, <span class="ident">EMAIL</span>, <span class="ident">PASSWORD</span>).<span class="kw">await</span>;
+        <span class="kw">let</span> <span class="ident">cookies</span> <span class="op">=</span> <span class="macro">get_cookie!</span>(<span class="ident">signin_resp</span>);
+
+        <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="macro">get_app!</span>(<span class="ident">data</span>).<span class="kw">await</span>;
+
+        <span class="kw">let</span> <span class="ident">urls</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">PAGES</span>.<span class="ident">home</span>]; <span class="comment">// &amp;delete_sitekey_url, &amp;edit_sitekey_url];</span>
+
+        <span class="kw">for</span> <span class="ident">url</span> <span class="kw">in</span> <span class="ident">urls</span>.<span class="ident">iter</span>() {
+            <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span>
+                <span class="ident">test::call_service</span>(<span class="kw-2">&amp;</span><span class="ident">app</span>, <span class="ident">test::TestRequest::get</span>().<span class="ident">uri</span>(<span class="ident">url</span>).<span class="ident">to_request</span>())
+                    .<span class="kw">await</span>;
+            <span class="macro">assert_eq!</span>(<span class="ident">resp</span>.<span class="ident">status</span>(), <span class="ident">StatusCode::FOUND</span>);
+
+            <span class="kw">let</span> <span class="ident">authenticated_resp</span> <span class="op">=</span> <span class="ident">test::call_service</span>(
+                <span class="kw-2">&amp;</span><span class="ident">app</span>,
+                <span class="ident">test::TestRequest::get</span>()
+                    .<span class="ident">uri</span>(<span class="ident">url</span>)
+                    .<span class="ident">cookie</span>(<span class="ident">cookies</span>.<span class="ident">clone</span>())
+                    .<span class="ident">to_request</span>(),
+            )
+            .<span class="kw">await</span>;
+
+            <span class="macro">assert_eq!</span>(<span class="ident">authenticated_resp</span>.<span class="ident">status</span>(), <span class="ident">StatusCode::OK</span>);
+        }
+
+        <span class="ident">delete_user</span>(<span class="ident">NAME</span>, <span class="kw-2">&amp;</span><span class="ident">data</span>).<span class="kw">await</span>;
+    }
+
     <span class="attribute">#[<span class="ident">actix_rt::test</span>]</span>
     <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">public_pages_tempaltes_work</span>() {
         <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="ident">test::init_service</span>(<span class="ident">App::new</span>().<span class="ident">configure</span>(<span class="ident">services</span>)).<span class="kw">await</span>;
