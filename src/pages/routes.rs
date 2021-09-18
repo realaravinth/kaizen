@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use super::auth::routes::Auth;
-//use super::errors::routes::Errors;
+use super::errors::routes::Errors;
 use super::panel::routes::Panel;
 pub const ROUTES: Routes = Routes::new();
 
@@ -23,7 +23,7 @@ pub struct Routes {
     pub home: &'static str,
     pub auth: Auth,
     pub panel: Panel,
-    //    pub errors: Errors,
+    pub errors: Errors,
     pub about: &'static str,
     pub sitemap: &'static str,
     pub thanks: &'static str,
@@ -35,12 +35,12 @@ pub struct Routes {
 impl Routes {
     const fn new() -> Routes {
         let panel = Panel::new();
-        let home = "/";
+        let home = panel.home;
         Routes {
             auth: Auth::new(),
             panel,
             home,
-            //    errors: Errors::new(),
+            errors: Errors::new(),
             about: "/about",
             sitemap: "/sitemap.xml",
             thanks: "/thanks",

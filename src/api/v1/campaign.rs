@@ -246,19 +246,18 @@ pub async fn list_campaign(
 pub mod runner {
     use super::*;
 
-pub async fn list_campaign_runner(
-    username: &str,
-    data: &AppData,
-) -> ServiceResult<Vec<ListCampaignResp>> {
+    pub async fn list_campaign_runner(
+        username: &str,
+        data: &AppData,
+    ) -> ServiceResult<Vec<ListCampaignResp>> {
+        struct ListCampaign {
+            name: String,
+            uuid: Uuid,
+        }
 
-    struct ListCampaign {
-        name: String,
-        uuid: Uuid,
-    }
-
-    let mut campaigns = sqlx::query_as!(
-        ListCampaign,
-        "SELECT 
+        let mut campaigns = sqlx::query_as!(
+            ListCampaign,
+            "SELECT 
             name, uuid
         FROM 
             kaizen_campaign 
@@ -271,19 +270,19 @@ pub async fn list_campaign_runner(
                     WHERE
                         name = $1
                 )",
-        username
-    )
-    .fetch_all(&data.db)
-    .await?;
+            username
+        )
+        .fetch_all(&data.db)
+        .await?;
 
-    let mut list_resp = Vec::with_capacity(campaigns.len());
-    campaigns.drain(0..).for_each(|c| {
-        list_resp.push(ListCampaignResp {
-            name: c.name,
-            uuid: c.uuid.to_string(),
+        let mut list_resp = Vec::with_capacity(campaigns.len());
+        campaigns.drain(0..).for_each(|c| {
+            list_resp.push(ListCampaignResp {
+                name: c.name,
+                uuid: c.uuid.to_string(),
+            });
         });
-    });
 
-    Ok(list_resp)
-}
+        Ok(list_resp)
+    }
 }

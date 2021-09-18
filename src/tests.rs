@@ -30,6 +30,8 @@ pub async fn delete_user(name: &str, data: &Data) {
     println!("Deleting user: {:?}", &r);
 }
 
+pub struct FORM;
+
 #[macro_export]
 macro_rules! post_request {
     ($uri:expr) => {
@@ -41,6 +43,16 @@ macro_rules! post_request {
             .uri($uri)
             .insert_header((actix_web::http::header::CONTENT_TYPE, "application/json"))
             .set_payload(serde_json::to_string($serializable).unwrap())
+    };
+
+    ($serializable:expr, $uri:expr, FORM) => {
+        test::TestRequest::post()
+            .uri($uri)
+            //            .insert_header((
+            //                actix_web::http::header::CONTENT_TYPE,
+            //                "application/x-www-form-urlencoded",
+            //            ))
+            .set_form($serializable)
     };
 }
 

@@ -18,9 +18,9 @@ use actix_web::{HttpResponse, Responder};
 use my_codegen::get;
 use sailfish::TemplateOnce;
 
-use crate::PAGES;
+use crate::api::v1::campaign::{runner::list_campaign_runner, ListCampaignResp};
 use crate::AppData;
-use crate::api::v1::campaign::{ListCampaignResp, runner::list_campaign_runner};
+use crate::PAGES;
 
 pub mod routes {
     pub struct Panel {
@@ -28,9 +28,7 @@ pub mod routes {
     }
     impl Panel {
         pub const fn new() -> Panel {
-            Panel {
-                home: "/",
-            }
+            Panel { home: "/" }
         }
 
         pub const fn get_sitemap() -> [&'static str; 1] {
@@ -40,21 +38,19 @@ pub mod routes {
     }
 }
 
-
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);
 }
 
-
 #[derive(TemplateOnce)]
-#[template(path = "auth/login/index.html")]
-struct HomePage{
+#[template(path = "panel/index.html")]
+struct HomePage {
     data: Vec<ListCampaignResp>,
 }
 
 impl HomePage {
     fn new(data: Vec<ListCampaignResp>) -> Self {
-        Self {data}
+        Self { data }
     }
 }
 
@@ -62,7 +58,6 @@ const PAGE: &str = "Home";
 
 #[get(path = "PAGES.panel.home", wrap = "crate::CheckLogin")]
 pub async fn home(data: AppData, id: Identity) -> impl Responder {
-
     let username = id.identity().unwrap();
     let campaigns = list_campaign_runner(&username, &data).await.unwrap();
     let page = HomePage::new(campaigns).render_once().unwrap();

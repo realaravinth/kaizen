@@ -116,7 +116,7 @@ mod tests {
 
         let (_, _, signin_resp) = signin(DEMO_USER, DEMO_PASSWORD).await;
         let cookies = get_cookie!(signin_resp);
-       let app = get_app!(Data::new().await).await;
+        let app = get_app!(Data::new().await).await;
 
         sleep(Duration::from_secs(2)).await;
         assert!(username_exists(&payload, &data).await.unwrap().exists);

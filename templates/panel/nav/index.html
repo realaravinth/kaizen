@@ -3,7 +3,7 @@
 
   <div class="nav__header">
     <a class="nav__logo-container" href="/">
-      <img class="nav__logo" src="/logo.svg" alt="logo" alt="WiOS logo" />
+      <img src="<.= crate::assets::LOGO.path .>" alt="logo" class="nav__logo" />
       <p class="nav__logo-text">KAIZEN</p>
     </a>
     <label class="nav__hamburger-menu" for="nav__toggle">
@@ -30,11 +30,5 @@
       <a class="nav__link" rel="noreferrer" href="/logout">Log out</a>
     </div>
 
-    <link rel="stylesheet" href="{{ get_url(path='/nav/main.css') }}" />
-    <link
-      rel="stylesheet"
-      media="screen and (max-width: 1200px)"
-      href="{{ get_url(path='/nav/mobile.css') }}"
-    />
   </div>
 </nav>

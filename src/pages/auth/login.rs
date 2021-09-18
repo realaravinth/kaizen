@@ -14,23 +14,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-use actix_web::{HttpResponse, Responder};
+use actix_identity::Identity;
+use actix_web::{http::header, web, HttpResponse, Responder};
 use lazy_static::lazy_static;
-use my_codegen::get;
+use my_codegen::{get, post};
 use sailfish::TemplateOnce;
 
+use crate::api::v1::auth::runners;
+use crate::errors::*;
+use crate::pages::errors::ErrorPage;
+use crate::AppData;
 use crate::PAGES;
 
 #[derive(Clone, TemplateOnce)]
 #[template(path = "auth/login/index.html")]
-struct IndexPage;
+struct IndexPage<'a> {
+    error: Option<ErrorPage<'a>>,
+}
 
 const PAGE: &str = "Login";
 
-impl Default for IndexPage {
+impl<'a> Default for IndexPage<'a> {
     fn default() -> Self {
-        IndexPage
+        IndexPage { error: None }
+    }
+}
+
+impl<'a> IndexPage<'a> {
+    pub fn new(title: &'a str, message: &'a str) -> Self {
+        Self {
+            error: Some(ErrorPage::new(title, message)),
+        }
     }
 }
 
@@ -43,4 +57,113 @@ pub async fn login() -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(&*INDEX)
+}
+
+#[post(path = "PAGES.auth.login")]
+pub async fn login_submit(
+    id: Identity,
+    payload: web::Form<runners::Login>,
+    data: AppData,
+) -> PageResult<impl Responder> {
+    match runners::login_runner(payload.into_inner(), &data).await {
+        Ok(username) => {
+            id.remember(username);
+            Ok(HttpResponse::Found()
+                .insert_header((header::LOCATION, PAGES.home))
+                .finish())
+        }
+        Err(ServiceError::WrongPassword) => Ok(HttpResponse::Unauthorized()
+            .content_type("text/html; charset=utf-8")
+            .body(
+                IndexPage::new("Unauthorized", "Wrong Password")
+                    .render_once()
+                    .unwrap(),
+            )),
+        Err(ServiceError::AccountNotFound) => Ok(HttpResponse::Unauthorized()
+            .content_type("text/html; charset=utf-8")
+            .body(
+                IndexPage::new("Unauthorized", "Account Not Found ")
+                    .render_once()
+                    .unwrap(),
+            )),
+
+        Err(e) => Err(e.into()),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use actix_web::test;
+
+    use super::*;
+
+    use crate::api::v1::auth::runners::{Login, Register};
+    use crate::data::Data;
+    use crate::tests::*;
+    use crate::*;
+    use actix_web::http::StatusCode;
+
+    #[actix_rt::test]
+    async fn auth_form_works() {
+        let data = Data::new().await;
+        const NAME: &str = "testuserform";
+        const PASSWORD: &str = "longpassword";
+
+        let app = get_app!(data).await;
+
+        delete_user(NAME, &data).await;
+
+        // 1. Register with email == None
+        let msg = Register {
+            username: NAME.into(),
+            password: PASSWORD.into(),
+            confirm_password: PASSWORD.into(),
+            email: None,
+        };
+        let resp = test::call_service(
+            &app,
+            post_request!(&msg, V1_API_ROUTES.auth.register).to_request(),
+        )
+        .await;
+        assert_eq!(resp.status(), StatusCode::OK);
+
+        // correct form login
+        let msg = Login {
+            login: NAME.into(),
+            password: PASSWORD.into(),
+        };
+
+        let resp = test::call_service(
+            &app,
+            post_request!(&msg, PAGES.auth.login, FORM).to_request(),
+        )
+        .await;
+        assert_eq!(resp.status(), StatusCode::FOUND);
+        let headers = resp.headers();
+        assert_eq!(headers.get(header::LOCATION).unwrap(), PAGES.home,);
+
+        // incorrect form login
+        let msg = Login {
+            login: NAME.into(),
+            password: NAME.into(),
+        };
+        let resp = test::call_service(
+            &app,
+            post_request!(&msg, PAGES.auth.login, FORM).to_request(),
+        )
+        .await;
+        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+
+        // non-existent form login
+        let msg = Login {
+            login: PASSWORD.into(),
+            password: PASSWORD.into(),
+        };
+        let resp = test::call_service(
+            &app,
+            post_request!(&msg, PAGES.auth.login, FORM).to_request(),
+        )
+        .await;
+        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+    }
 }

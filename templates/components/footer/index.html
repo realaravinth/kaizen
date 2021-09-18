@@ -17,9 +17,8 @@
       <a class="footer__link" href="<.= PAGES.thanks .>">Thanks</a>
     </li>
     <li class="footer__item">
-      <a class="footer__link" href="<.= &*crate::SOURCE_FILES_OF_INSTANCE .>"
-        ><.= crate::GIT_COMMIT_HASH .></a
-      >
+      <a class="footer__link" href="<.= &*crate::SOURCE_FILES_OF_INSTANCE .>">
+        v<.= crate::VERSION .>-<.= crate::GIT_COMMIT_HASH[0..8] .>
     </li>
   </ul>
 </footer>

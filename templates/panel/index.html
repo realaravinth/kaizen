@@ -1,7 +1,7 @@
 <. include!("../components/base/top.html"); .>
-<body>
+<body class="panel__body">
   <. include!("nav/index.html"); .>
-  <main>
+  <main class="panel__container">
     <. if data.is_empty() { .>
 
     <p>
@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody class="campaign__body">
-        <. for campaign in data.iter() .>
+        <. for campaign in data.iter() { .>
         <tr class="campaign__item">
           <td>
             <a href="/campaign/<.= campaign.uuid .>/">
@@ -37,6 +37,6 @@
     </table>
     <. } .>
   </main>
-  <. include!("../../components/footer/index.html"); .>
+  <. include!("../components/footer/index.html"); .>
 </body>
-<. include!("../../components/base/bottom.html"); .>
+<. include!("../components/base/bottom.html"); .>

@@ -14,32 +14,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-pub mod join;
-pub mod login;
-pub mod sudo;
-
-pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
-    cfg.service(login::login);
-    cfg.service(login::login_submit);
-    cfg.service(join::join);
+.error-title {
+  text-align: center;
 }
 
-pub mod routes {
-    pub struct Auth {
-        pub login: &'static str,
-        pub join: &'static str,
-    }
-    impl Auth {
-        pub const fn new() -> Auth {
-            Auth {
-                login: "/login",
-                join: "/join",
-            }
-        }
-
-        pub const fn get_sitemap() -> [&'static str; 2] {
-            const AUTH: Auth = Auth::new();
-            [AUTH.login, AUTH.join]
-        }
-    }
+.error-message {
+  text-align: center;
 }

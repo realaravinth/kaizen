@@ -17,34 +17,49 @@
 @import "./nav/main.scss";
 @import "../components/button";
 
+.panel__body {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel__container {
+    width: 80%;
+    align-items: center;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+}
+
 .link__btn {
-	@include button;
-	margin: 0px 5px;
-	padding: 0.3rem 0.3rem;
-	padding-bottom: 0.2rem;
+    @include button;
+    margin: 0px 5px;
+    padding: 0.3rem 0.3rem;
+    padding-bottom: 0.2rem;
 }
 
 table {
-	border-collapse: collapse;
-	caption-side: bottom;
-	border-color: #e9ecef;
-	text-align: center;
-	width: 50%;
+    border-collapse: collapse;
+    caption-side: bottom;
+    border-color: #e9ecef;
+    text-align: center;
+    width: 50%;
 }
 
 table > thead {
-	vertical-align: bottom;
-	border-bottom: 1px solid #cdc8ca;
-	text-align: center;
+    vertical-align: bottom;
+    border-bottom: 1px solid #cdc8ca;
+    text-align: center;
 }
 
 table {
-	th {
-		text-align: center;
-	}
-	td {
-		margin: auto;
-		padding: 10px;
-		border-bottom: 1px solid #edddd1;
-	}
+    th {
+        text-align: center;
+    }
+    td {
+        margin: auto;
+        padding: 10px;
+        border-bottom: 1px solid #edddd1;
+    }
 }
