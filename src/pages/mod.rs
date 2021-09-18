@@ -40,54 +40,55 @@ mod tests {
     use crate::tests::*;
     use crate::*;
 
-//    #[actix_rt::test]
-//    async fn protected_pages_templates_work() {
-//        const NAME: &str = "templateuser";
-//        const PASSWORD: &str = "longpassword";
-//        const EMAIL: &str = "templateuser@a.com";
-//
-//        {
-//            let data = Data::new().await;
-//            delete_user(NAME, &data).await;
-//        }
-//
-//        let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
-//        let cookies = get_cookie!(signin_resp);
-//
-//        let app = get_app!(data).await;
-//
-//        let edit_sitekey_url = format!("/sitekey/{}/edit", &token_key.key);
-//        let delete_sitekey_url = format!("/sitekey/{}/delete", &token_key.key);
-//        let urls = vec![PAGES.home, &delete_sitekey_url, &edit_sitekey_url];
-//
-//        for url in urls.iter() {
-//            let resp =
-//                test::call_service(&app, test::TestRequest::get().uri(url).to_request()).await;
-//            assert_eq!(resp.status(), StatusCode::FOUND);
-//
-//            let authenticated_resp = test::call_service(
-//                &app,
-//                test::TestRequest::get()
-//                    .uri(url)
-//                    .cookie(cookies.clone())
-//                    .to_request(),
-//            )
-//            .await;
-//
-//            assert_eq!(authenticated_resp.status(), StatusCode::OK);
-//        }
-//
-//        delete_user(NAME, &data).await;
-//    }
-//
+    //    #[actix_rt::test]
+    //    async fn protected_pages_templates_work() {
+    //        const NAME: &str = "templateuser";
+    //        const PASSWORD: &str = "longpassword";
+    //        const EMAIL: &str = "templateuser@a.com";
+    //
+    //        {
+    //            let data = Data::new().await;
+    //            delete_user(NAME, &data).await;
+    //        }
+    //
+    //        let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+    //        let cookies = get_cookie!(signin_resp);
+    //
+    //        let app = get_app!(data).await;
+    //
+    //        let edit_sitekey_url = format!("/sitekey/{}/edit", &token_key.key);
+    //        let delete_sitekey_url = format!("/sitekey/{}/delete", &token_key.key);
+    //        let urls = vec![PAGES.home, &delete_sitekey_url, &edit_sitekey_url];
+    //
+    //        for url in urls.iter() {
+    //            let resp =
+    //                test::call_service(&app, test::TestRequest::get().uri(url).to_request()).await;
+    //            assert_eq!(resp.status(), StatusCode::FOUND);
+    //
+    //            let authenticated_resp = test::call_service(
+    //                &app,
+    //                test::TestRequest::get()
+    //                    .uri(url)
+    //                    .cookie(cookies.clone())
+    //                    .to_request(),
+    //            )
+    //            .await;
+    //
+    //            assert_eq!(authenticated_resp.status(), StatusCode::OK);
+    //        }
+    //
+    //        delete_user(NAME, &data).await;
+    //    }
+    //
     #[actix_rt::test]
     async fn public_pages_tempaltes_work() {
         let app = test::init_service(App::new().configure(services)).await;
-        let urls = vec![PAGES.auth.login, PAGES.auth.join];//, PAGES.sitemap];
+        let urls = vec![PAGES.auth.login, PAGES.auth.join]; //, PAGES.sitemap];
 
         for url in urls.iter() {
             let resp =
-                test::call_service(&app, test::TestRequest::get().uri(url).to_request()).await;
+                test::call_service(&app, test::TestRequest::get().uri(url).to_request())
+                    .await;
 
             assert_eq!(resp.status(), StatusCode::OK);
         }

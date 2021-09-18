@@ -85,12 +85,14 @@ mod tests {
     use actix_web::test;
 
     use super::*;
+    use crate::api::v1::campaign::{CreateReq, ListCampaignResp};
     use crate::tests::*;
 
     const DURATION: u64 = 5;
 
     #[actix_rt::test]
     async fn demo_account_works() {
+        const CAMPAIGN_NAME: &str = "testcampaignuser";
         {
             let data = Data::new().await;
             crate::tests::delete_user(DEMO_USER, &data).await;
@@ -109,5 +111,42 @@ mod tests {
         // deletion works
         assert!(super::delete_demo_user(&data).await.is_ok());
         assert!(!username_exists(&payload, &data).await.unwrap().exists);
+
+        run(data.clone(), duration.clone()).await.unwrap();
+
+        let (_, _, signin_resp) = signin(DEMO_USER, DEMO_PASSWORD).await;
+        let cookies = get_cookie!(signin_resp);
+       let app = get_app!(Data::new().await).await;
+
+        sleep(Duration::from_secs(2)).await;
+        assert!(username_exists(&payload, &data).await.unwrap().exists);
+
+        let new = CreateReq {
+            name: CAMPAIGN_NAME.into(),
+        };
+
+        let new_resp = test::call_service(
+            &app,
+            post_request!(&new, crate::V1_API_ROUTES.campaign.new)
+                .cookie(cookies.clone())
+                .to_request(),
+        )
+        .await;
+
+        assert_eq!(new_resp.status(), StatusCode::OK);
+
+        sleep(duration).await;
+
+        let list_resp_post_deletion = test::call_service(
+            &app,
+            post_request!(V1_API_ROUTES.campaign.list)
+                .cookie(cookies.clone())
+                .to_request(),
+        )
+        .await;
+        assert_eq!(list_resp_post_deletion.status(), StatusCode::OK);
+        let list: Vec<ListCampaignResp> =
+            test::read_body_json(list_resp_post_deletion).await;
+        assert!(!list.iter().any(|c| c.name == CAMPAIGN_NAME));
     }
 }
