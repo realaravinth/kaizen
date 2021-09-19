@@ -75,10 +75,8 @@ pub async fn login_submit(
         }
         Err(e) => {
             let status = e.status_code();
-            let heading = match status.canonical_reason() {
-                Some(s) => s,
-                None => "Error",
-            };
+            let heading = status.canonical_reason().unwrap_or("Error");
+
             Ok(HttpResponseBuilder::new(status)
                 .content_type("text/html; charset=utf-8")
                 .body(

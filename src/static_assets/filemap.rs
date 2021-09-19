@@ -27,7 +27,7 @@ impl FileMap {
         let files = Files::new(map);
         Self { files }
     }
-    pub fn get<'a>(&'a self, path: impl AsRef<str>) -> Option<&'a str> {
+    pub fn get(&self, path: impl AsRef<str>) -> Option<&str> {
         let file_path = self.files.get_full_path(path);
         file_path.map(|file_path| &file_path[1..])
     }

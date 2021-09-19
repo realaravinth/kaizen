@@ -30,7 +30,7 @@ pub async fn delete_user(name: &str, data: &Data) {
     println!("Deleting user: {:?}", &r);
 }
 
-#[allow(dead_code)]
+#[allow(dead_code, clippy::upper_case_acronyms)]
 pub struct FORM;
 
 #[macro_export]

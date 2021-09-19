@@ -112,7 +112,7 @@ mod tests {
         assert!(super::delete_demo_user(&data).await.is_ok());
         assert!(!username_exists(&payload, &data).await.unwrap().exists);
 
-        run(data.clone(), duration.clone()).await.unwrap();
+        run(data.clone(), duration).await.unwrap();
 
         let (_, _, signin_resp) = signin(DEMO_USER, DEMO_PASSWORD).await;
         let cookies = get_cookie!(signin_resp);

@@ -64,10 +64,8 @@ pub async fn join_submit(
     data: AppData,
 ) -> PageResult<impl Responder> {
     let mut payload = payload.into_inner();
-    if payload.email.is_some() {
-        if payload.email.as_ref().unwrap().is_empty() {
-            payload.email = None;
-        }
+    if payload.email.is_some() && payload.email.as_ref().unwrap().is_empty() {
+        payload.email = None;
     }
 
     match runners::register_runner(&payload, &data).await {
@@ -76,10 +74,7 @@ pub async fn join_submit(
             .finish()),
         Err(e) => {
             let status = e.status_code();
-            let heading = match status.canonical_reason() {
-                Some(s) => s,
-                None => "Error",
-            };
+            let heading = status.canonical_reason().unwrap_or("Error");
             Ok(HttpResponseBuilder::new(status)
                 .content_type("text/html; charset=utf-8")
                 .body(
