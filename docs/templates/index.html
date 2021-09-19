@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="{{ get_url(path="main.css", cachebust=true)
+    }}">
+    <title>Home | Kaizen</title>
+  </head>
+  <body>
+    <main class="container">
+      <div class="banner">
+        <img width="180px" src="{{ get_url(path="/img/logo.svg", cachebust=true)
+        }}" alt="Kaizen logo">
+        <h1>Kaizen</h1>
+        <p class="tagline">Collect anonymous feedback</p>
+        <div class="action">
+          <button type="submit">See Demo</button>
+          <a href="docs.kaizen.batsense.net">Get Started</a>
+        </div>
+      </div>
+      <h2>Why?</h2>
+      <p>
+        Official documentation is often the only source of information available
+        to the user. Good documentation must be clear, easy to navigate, and
+        should answer most "how to do X" questions.
+        <br />
+        <br />
+        As authors and maintainers do we really know if our documentation is
+        helpful?
+      </p>
+
+      <h2>How?</h2>
+      <p>
+        We provide a simple widget that you can embed in your webpages. The
+        widget contains two buttons and an optional text field where your users
+        can provide descriptive feedback. The binary is self-contained and easy
+        to self-host. You can either host it a VPS or use one of the free PaaS
+        services like Heroku
+      </p>
+    </main>
+    {% include "footer.html" %}
+  </body>
+</html>
