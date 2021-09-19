@@ -15,7 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use actix_identity::Identity;
-use actix_web::{http::header, web, HttpResponse, Responder};
+use actix_web::HttpResponseBuilder;
+use actix_web::{error::ResponseError, http::header, web, HttpResponse, Responder};
 use lazy_static::lazy_static;
 use my_codegen::{get, post};
 use sailfish::TemplateOnce;
@@ -72,22 +73,20 @@ pub async fn login_submit(
                 .insert_header((header::LOCATION, PAGES.home))
                 .finish())
         }
-        Err(ServiceError::WrongPassword) => Ok(HttpResponse::Unauthorized()
-            .content_type("text/html; charset=utf-8")
-            .body(
-                IndexPage::new("Unauthorized", "Wrong Password")
-                    .render_once()
-                    .unwrap(),
-            )),
-        Err(ServiceError::AccountNotFound) => Ok(HttpResponse::Unauthorized()
-            .content_type("text/html; charset=utf-8")
-            .body(
-                IndexPage::new("Unauthorized", "Account Not Found ")
-                    .render_once()
-                    .unwrap(),
-            )),
-
-        Err(e) => Err(e.into()),
+        Err(e) => {
+            let status = e.status_code();
+            let heading = match status.canonical_reason() {
+                Some(s) => s,
+                None => "Error",
+            };
+            Ok(HttpResponseBuilder::new(status)
+                .content_type("text/html; charset=utf-8")
+                .body(
+                    IndexPage::new(heading, &format!("{}", e))
+                        .render_once()
+                        .unwrap(),
+                ))
+        }
     }
 }
 
@@ -164,6 +163,6 @@ mod tests {
             post_request!(&msg, PAGES.auth.login, FORM).to_request(),
         )
         .await;
-        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
     }
 }

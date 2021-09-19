@@ -1,10 +1,11 @@
 <. include!("../../components/base/top.html"); .>
 <body class="auth__body">
-<main>
+<main class="auth__container">
   <img src="<.= crate::assets::LOGO.path .>" alt="logo" class="auth__logo" />
   <h1>Join Kaizen</h1>
+  <. include!("../../components/error/index.html"); .>
   <form
-    action="<.= crate::V1_API_ROUTES.auth.register .>"
+    action="<.= crate::PAGES.auth.join .>"
     method="POST"
     class="auth__form"
     accept-charset="utf-8"
@@ -25,7 +26,6 @@
       <input
         class="auth__form-input"
         name="email"
-        required
         id="email"
         type="email"
       />
@@ -42,13 +42,13 @@
       />
     </label>
 
-    <label class="auth__form-label" for="password-check">
+    <label class="auth__form-label" for="confirm_password">
       Re-enter Password
       <input
         class="auth__form-input"
-        name="password-check"
+        name="confirm_password"
         required
-        id="password-check"
+        id="confirm_password"
         type="password"
       />
     </label>

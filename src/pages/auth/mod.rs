@@ -22,6 +22,7 @@ pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(login::login);
     cfg.service(login::login_submit);
     cfg.service(join::join);
+    cfg.service(join::join_submit);
 }
 
 pub mod routes {
