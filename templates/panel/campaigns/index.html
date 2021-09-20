@@ -1,9 +1,8 @@
-<. include!("../components/base/top.html"); .>
+<. include!("../../components/base/top.html"); .>
 <body class="panel__body">
-  <. include!("nav/index.html"); .>
+  <. include!("../nav/index.html"); .>
   <main class="panel__container">
     <. if data.is_empty() { .>
-
     <p>
       Looks like you don't have any campaings registered,
       <a class="link__btn" href="/campaign/new"> click here </a>
@@ -37,6 +36,6 @@
     </table>
     <. } .>
   </main>
-  <. include!("../components/footer/index.html"); .>
+  <. include!("../../components/footer/index.html"); .>
 </body>
-<. include!("../components/base/bottom.html"); .>
+<. include!("../../components/base/bottom.html"); .>

@@ -33,7 +33,7 @@ pub fn services(cfg: &mut ServiceConfig) {
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod tests {
-    use actix_web::http::StatusCode;
+    use actix_web::http::{header, StatusCode};
     use actix_web::test;
 
     use super::*;
@@ -56,7 +56,10 @@ mod tests {
 
         let app = get_app!(data).await;
 
-        let urls = vec![PAGES.home]; // &delete_sitekey_url, &edit_sitekey_url];
+        let urls = vec![
+            //PAGES.home,
+            PAGES.panel.campaigns.home,
+        ]; // &delete_sitekey_url, &edit_sitekey_url];
 
         for url in urls.iter() {
             let resp =
@@ -73,7 +76,16 @@ mod tests {
             )
             .await;
 
-            assert_eq!(authenticated_resp.status(), StatusCode::OK);
+            if url == &PAGES.home {
+                assert_eq!(authenticated_resp.status(), StatusCode::FOUND);
+                let headers = authenticated_resp.headers();
+                assert_eq!(
+                    headers.get(header::LOCATION).unwrap(),
+                    PAGES.panel.campaigns.home
+                );
+            } else {
+                assert_eq!(authenticated_resp.status(), StatusCode::OK);
+            }
         }
 
         delete_user(NAME, &data).await;
@@ -81,7 +93,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn public_pages_tempaltes_work() {
-        let app = test::init_service(App::new().configure(services)).await;
+        let app = test::init_service(App::new().configure(crate::pages::services)).await;
         let urls = vec![PAGES.auth.login, PAGES.auth.join]; //, PAGES.sitemap];
 
         for url in urls.iter() {
