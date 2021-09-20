@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["PAGE",""]],"fn":[["services",""]],"mod":[["routes",""]],"struct":[["HomePage",""],["home",""]]});
+initSidebarItems({"constant":[["PAGE",""]],"fn":[["services",""]],"mod":[["new",""],["routes",""]],"struct":[["HomePage",""],["home",""]]});

@@ -144,7 +144,6 @@
     <span class="kw">use</span> <span class="ident">actix_web::http</span>::{<span class="ident">header</span>, <span class="ident">StatusCode</span>};
     <span class="kw">use</span> <span class="ident">actix_web::test</span>;
 
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::tests</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="kw">crate</span>::<span class="kw-2">*</span>;
 
@@ -165,9 +164,10 @@
         <span class="kw">let</span> <span class="ident">app</span> <span class="op">=</span> <span class="macro">get_app!</span>(<span class="ident">data</span>).<span class="kw">await</span>;
 
         <span class="kw">let</span> <span class="ident">urls</span> <span class="op">=</span> <span class="macro">vec!</span>[
-            <span class="comment">//PAGES.home,</span>
+            <span class="ident">PAGES</span>.<span class="ident">home</span>,
             <span class="ident">PAGES</span>.<span class="ident">panel</span>.<span class="ident">campaigns</span>.<span class="ident">home</span>,
-        ]; <span class="comment">// &amp;delete_sitekey_url, &amp;edit_sitekey_url];</span>
+            <span class="ident">PAGES</span>.<span class="ident">panel</span>.<span class="ident">campaigns</span>.<span class="ident">new</span>,
+        ];
 
         <span class="kw">for</span> <span class="ident">url</span> <span class="kw">in</span> <span class="ident">urls</span>.<span class="ident">iter</span>() {
             <span class="kw">let</span> <span class="ident">resp</span> <span class="op">=</span>
