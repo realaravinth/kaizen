@@ -47,13 +47,7 @@ macro_rules! post_request {
     };
 
     ($serializable:expr, $uri:expr, FORM) => {
-        test::TestRequest::post()
-            .uri($uri)
-            //            .insert_header((
-            //                actix_web::http::header::CONTENT_TYPE,
-            //                "application/x-www-form-urlencoded",
-            //            ))
-            .set_form($serializable)
+        test::TestRequest::post().uri($uri).set_form($serializable)
     };
 }
 
@@ -69,29 +63,22 @@ macro_rules! get_works {
 
 #[macro_export]
 macro_rules! get_app {
+    ("APP") => {
+        actix_web::App::new()
+            .app_data(crate::get_json_err())
+            .wrap(crate::get_identity_service())
+            .wrap(actix_web::middleware::NormalizePath::new(
+                actix_web::middleware::TrailingSlash::Trim,
+            ))
+            .configure(crate::services)
+    };
+
     () => {
-        test::init_service(
-            App::new()
-                .wrap(get_identity_service())
-                .wrap(actix_middleware::NormalizePath::new(
-                    actix_middleware::TrailingSlash::Trim,
-                ))
-                .configure(crate::api::v1::services)
-                .configure(pages::services)
-                .configure(crate::static_assets::services),
-        )
+        test::init_service(get_app!("APP"))
     };
     ($data:expr) => {
         test::init_service(
-            App::new()
-                .wrap(get_identity_service())
-                .wrap(actix_middleware::NormalizePath::new(
-                    actix_middleware::TrailingSlash::Trim,
-                ))
-                .configure(crate::api::v1::services)
-                .configure(crate::static_assets::services)
-                .configure(pages::services)
-                .app_data(actix_web::web::Data::new($data.clone())),
+            get_app!("APP").app_data(actix_web::web::Data::new($data.clone())),
         )
     };
 }

@@ -53,9 +53,6 @@ lazy_static! {
 
     pub static ref CSS: &'static str =
         FILES.get("./static/cache/bundle/css/main.css").unwrap();
-//    pub static ref MOBILE_CSS: &'static str =
-//        FILES.get("./static/cache/bundle/css/mobile.css").unwrap();
-
     /// points to source files matching build commit
     pub static ref SOURCE_FILES_OF_INSTANCE: String = {
         let mut url = SETTINGS.source_code.clone();
@@ -107,20 +104,18 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(actix_middleware::Logger::default())
+            .wrap(actix_middleware::Compress::default())
+            .app_data(get_json_err())
             .wrap(
                 actix_middleware::DefaultHeaders::new()
                     .header("Permissions-Policy", "interest-cohort=()"),
             )
             .wrap(get_identity_service())
-            .wrap(actix_middleware::Compress::default())
-            .app_data(data.clone())
             .wrap(actix_middleware::NormalizePath::new(
                 actix_middleware::TrailingSlash::Trim,
             ))
-            .configure(pages::services)
-            .configure(api::v1::services)
-            .configure(static_assets::services)
-            .app_data(get_json_err())
+            .configure(services)
+            .app_data(data.clone())
     })
     .bind(SETTINGS.server.get_ip())
     .unwrap()
@@ -147,4 +142,10 @@ pub fn get_identity_service() -> IdentityService<CookieIdentityPolicy> {
             .domain(&SETTINGS.server.domain)
             .secure(false),
     )
+}
+
+pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
+    pages::services(cfg);
+    api::v1::services(cfg);
+    static_assets::services(cfg);
 }

@@ -13,22 +13,26 @@
  *
  * You should have received a copy of the GNU Affero General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_identity::Identity;
-use actix_web::{HttpResponse, Responder};
+use actix_web::{http, HttpResponse, Responder};
 use my_codegen::get;
-use sailfish::TemplateOnce;
 
-use crate::api::v1::campaign::{runner::list_campaign_runner, ListCampaignResp};
-use crate::AppData;
 use crate::PAGES;
 
+mod campaigns;
+
 pub mod routes {
+    use super::campaigns::routes::Campaigns;
+
     pub struct Panel {
         pub home: &'static str,
+        pub campaigns: Campaigns,
     }
     impl Panel {
         pub const fn new() -> Panel {
-            Panel { home: "/" }
+            Panel {
+                home: "/",
+                campaigns: Campaigns::new(),
+            }
         }
 
         pub const fn get_sitemap() -> [&'static str; 1] {
@@ -40,29 +44,12 @@ pub mod routes {
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);
+    campaigns::services(cfg);
 }
-
-#[derive(TemplateOnce)]
-#[template(path = "panel/index.html")]
-struct HomePage {
-    data: Vec<ListCampaignResp>,
-}
-
-impl HomePage {
-    fn new(data: Vec<ListCampaignResp>) -> Self {
-        Self { data }
-    }
-}
-
-const PAGE: &str = "Home";
 
 #[get(path = "PAGES.panel.home", wrap = "crate::CheckLogin")]
-pub async fn home(data: AppData, id: Identity) -> impl Responder {
-    let username = id.identity().unwrap();
-    let campaigns = list_campaign_runner(&username, &data).await.unwrap();
-    let page = HomePage::new(campaigns).render_once().unwrap();
-
-    HttpResponse::Ok()
-        .content_type("text/html; charset=utf-8")
-        .body(&page)
+pub async fn home() -> impl Responder {
+    HttpResponse::Found()
+        .insert_header((http::header::LOCATION, PAGES.panel.campaigns.home))
+        .finish()
 }

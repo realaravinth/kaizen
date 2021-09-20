@@ -2,7 +2,7 @@
   <input type="checkbox" class="nav__toggle" id="nav__toggle" />
 
   <div class="nav__header">
-    <a class="nav__logo-container" href="/">
+    <a class="nav__logo-container" href="<.= crate::PAGES.home .>">
       <img src="<.= crate::assets::LOGO.path .>" alt="logo" class="nav__logo" />
       <p class="nav__logo-text">KAIZEN</p>
     </a>
@@ -15,11 +15,18 @@
 
   <div class="nav__link-group">
     <div class="nav__link-container">
-      <a class="nav__link" rel="noreferrer" href="/home">Home</a>
+      <a class="nav__link" rel="noreferrer" href="<.= crate::PAGES.home .>"
+        >Home</a
+      >
     </div>
 
     <div class="nav__link-container">
-      <a class="nav__link" rel="noreferrer" href="/campaigns">Campaigns</a>
+      <a
+        class="nav__link"
+        rel="noreferrer"
+        href="<.= crate::PAGES.panel.campaigns.home .>"
+        >Campaigns</a
+      >
     </div>
 
     <div class="nav__link-container">
@@ -27,8 +34,12 @@
     </div>
 
     <div class="nav__link-container">
-      <a class="nav__link" rel="noreferrer" href="/logout">Log out</a>
+      <a
+        class="nav__link"
+        rel="noreferrer"
+        href="<.= crate::V1_API_ROUTES.auth.logout .>"
+        >Log out</a
+      >
     </div>
-
   </div>
 </nav>
