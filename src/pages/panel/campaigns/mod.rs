@@ -25,21 +25,28 @@ use crate::PAGES;
 pub mod routes {
     pub struct Campaigns {
         pub home: &'static str,
+        pub new: &'static str,
     }
     impl Campaigns {
         pub const fn new() -> Campaigns {
-            Campaigns { home: "/campaigns" }
+            Campaigns { 
+                home: "/campaigns",
+                new: "/campaigns/new" 
+            }
         }
 
-        pub const fn get_sitemap() -> [&'static str; 1] {
+        pub const fn get_sitemap() -> [&'static str; 2] {
             const CAMPAIGNS: Campaigns = Campaigns::new();
-            [CAMPAIGNS.home]
+            [CAMPAIGNS.home, CAMPAIGNS.new]
         }
     }
 }
 
+pub mod new;
+
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);
+    cfg.service(new::new_campaign);
 }
 
 #[derive(TemplateOnce)]

@@ -7,13 +7,13 @@
   <form
     action="<.= crate::PAGES.auth.login .>"
     method="POST"
-    class="auth__form"
+    class="form"
     accept-charset="utf-8"
   >
-    <label class="auth__form-label" for="login">
+    <label class=".form__label" for="login">
       Username or Email
       <input
-        class="auth__form-input"
+        class="form__input"
         name="login"
         required
         id="login"
@@ -21,10 +21,10 @@
       />
     </label>
 
-    <label class="auth__form-label" for="password">
+    <label class="form__label" for="password">
       password
       <input
-        class="auth__form-input"
+        class="form__input"
         name="password"
         required
         id="password"
@@ -32,13 +32,13 @@
       />
     </label>
 
-    <div class="auth__action">
+    <div class="form__action-container">
       <a href="/forgot-password">Forgot password?</a>
-      <button class="auth__form-submit" type="submit">Login</button>
+      <button class="form__submit" type="submit">Login</button>
     </div>
   </form>
 
-  <p class="auth__alt-action">
+  <p class="form__alt-action">
     New to Kaizen?
     <a href="<.= crate::PAGES.auth.join .>">Create an account </a>
   </p>

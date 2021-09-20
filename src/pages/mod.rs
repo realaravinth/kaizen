@@ -36,7 +36,6 @@ mod tests {
     use actix_web::http::{header, StatusCode};
     use actix_web::test;
 
-    use super::*;
     use crate::tests::*;
     use crate::*;
 
@@ -56,10 +55,8 @@ mod tests {
 
         let app = get_app!(data).await;
 
-        let urls = vec![
-            //PAGES.home,
-            PAGES.panel.campaigns.home,
-        ]; // &delete_sitekey_url, &edit_sitekey_url];
+        let urls = vec![ PAGES.home, PAGES.panel.campaigns.home, PAGES.panel.campaigns.new,
+        ];
 
         for url in urls.iter() {
             let resp =

@@ -14,32 +14,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-.auth__body {
-	height: 100vh;
-	max-height: 100vh;
-	overflow-y: hidden;
+@import "partials";
+
+.form {
+	@include form;
 }
 
-.auth__container {
-	width: 380px;
-	align-items: center;
-	margin: auto;
-	display: flex;
-	flex-direction: column;
+.form__label {
+	@include label;
 }
 
-.auth__logo {
-	width: 150px;
-	padding-left: 20px;
+.form__input {
+	@include input;
 }
 
-.auth__demo-user__banner {
-	margin: auto;
-	margin-top: 5px;
-	font-size: 0.8rem;
-	text-align: center;
+.form__action-container {
+	@include action_container;
 }
 
-.auth__demo-user__cred {
-	font-family: monospace, monospace;
+.form__alt-action {
+	@include alt_action;
+}
+
+.form__submit {
+	@include submit;
+}
+
+.form__submit:hover {
+	@include submit_hover;
 }
