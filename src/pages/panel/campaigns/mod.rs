@@ -29,9 +29,9 @@ pub mod routes {
     }
     impl Campaigns {
         pub const fn new() -> Campaigns {
-            Campaigns { 
+            Campaigns {
                 home: "/campaigns",
-                new: "/campaigns/new" 
+                new: "/campaigns/new",
             }
         }
 
@@ -47,6 +47,7 @@ pub mod new;
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);
     cfg.service(new::new_campaign);
+    cfg.service(new::new_campaign_submit);
 }
 
 #[derive(TemplateOnce)]

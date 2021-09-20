@@ -21,7 +21,7 @@ use lazy_static::lazy_static;
 use my_codegen::{get, post};
 use sailfish::TemplateOnce;
 
-use crate::api::v1::auth::runners;
+use crate::api::v1::campaign::{runners, CreateReq};
 use crate::errors::*;
 use crate::pages::errors::ErrorPage;
 use crate::AppData;
@@ -60,107 +60,75 @@ pub async fn new_campaign() -> impl Responder {
         .body(&*INDEX)
 }
 
-//#[post(path = "PAGES.auth.login")]
-//pub async fn login_submit(
-//    id: Identity,
-//    payload: web::Form<runners::Login>,
-//    data: AppData,
-//) -> PageResult<impl Responder> {
-//    match runners::login_runner(payload.into_inner(), &data).await {
-//        Ok(username) => {
-//            id.remember(username);
-//            Ok(HttpResponse::Found()
-//                .insert_header((header::LOCATION, PAGES.home))
-//                .finish())
-//        }
-//        Err(e) => {
-//            let status = e.status_code();
-//            let heading = status.canonical_reason().unwrap_or("Error");
-//
-//            Ok(HttpResponseBuilder::new(status)
-//                .content_type("text/html; charset=utf-8")
-//                .body(
-//                    NewCampaign::new(heading, &format!("{}", e))
-//                        .render_once()
-//                        .unwrap(),
-//                ))
-//        }
-//    }
-//}
-//
-//#[cfg(test)]
-//mod tests {
-//    use actix_web::test;
-//
-//    use super::*;
-//
-//    use crate::api::v1::auth::runners::{Login, Register};
-//    use crate::data::Data;
-//    use crate::tests::*;
-//    use crate::*;
-//    use actix_web::http::StatusCode;
-//
-//    #[actix_rt::test]
-//    async fn auth_form_works() {
-//        let data = Data::new().await;
-//        const NAME: &str = "testuserform";
-//        const PASSWORD: &str = "longpassword";
-//
-//        let app = get_app!(data).await;
-//
-//        delete_user(NAME, &data).await;
-//
-//        // 1. Register with email == None
-//        let msg = Register {
-//            username: NAME.into(),
-//            password: PASSWORD.into(),
-//            confirm_password: PASSWORD.into(),
-//            email: None,
-//        };
-//        let resp = test::call_service(
-//            &app,
-//            post_request!(&msg, V1_API_ROUTES.auth.register).to_request(),
-//        )
-//        .await;
-//        assert_eq!(resp.status(), StatusCode::OK);
-//
-//        // correct form login
-//        let msg = Login {
-//            login: NAME.into(),
-//            password: PASSWORD.into(),
-//        };
-//
-//        let resp = test::call_service(
-//            &app,
-//            post_request!(&msg, PAGES.auth.login, FORM).to_request(),
-//        )
-//        .await;
-//        assert_eq!(resp.status(), StatusCode::FOUND);
-//        let headers = resp.headers();
-//        assert_eq!(headers.get(header::LOCATION).unwrap(), PAGES.home,);
-//
-//        // incorrect form login
-//        let msg = Login {
-//            login: NAME.into(),
-//            password: NAME.into(),
-//        };
-//        let resp = test::call_service(
-//            &app,
-//            post_request!(&msg, PAGES.auth.login, FORM).to_request(),
-//        )
-//        .await;
-//        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
-//
-//        // non-existent form login
-//        let msg = Login {
-//            login: PASSWORD.into(),
-//            password: PASSWORD.into(),
-//        };
-//        let resp = test::call_service(
-//            &app,
-//            post_request!(&msg, PAGES.auth.login, FORM).to_request(),
-//        )
-//        .await;
-//        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
-//    }
-//}
+#[post(path = "PAGES.panel.campaigns.new", wrap = "crate::CheckLogin")]
+pub async fn new_campaign_submit(
+    id: Identity,
+    payload: web::Form<CreateReq>,
+    data: AppData,
+) -> PageResult<impl Responder> {
+    match runners::new(&payload.into_inner(), &data, &id).await {
+        Ok(_) => {
+            Ok(HttpResponse::Found()
+                //TODO show stats of new campaign
+                .insert_header((header::LOCATION, PAGES.panel.campaigns.home))
+                .finish())
+        }
+        Err(e) => {
+            let status = e.status_code();
+            let heading = status.canonical_reason().unwrap_or("Error");
+
+            Ok(HttpResponseBuilder::new(status)
+                .content_type("text/html; charset=utf-8")
+                .body(
+                    NewCampaign::new(heading, &format!("{}", e))
+                        .render_once()
+                        .unwrap(),
+                ))
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use actix_web::test;
+
+    use super::*;
+
+    use crate::data::Data;
+    use crate::tests::*;
+    use crate::*;
+    use actix_web::http::StatusCode;
+
+    #[actix_rt::test]
+    async fn new_campaign_form_works() {
+        let data = Data::new().await;
+        const NAME: &str = "testusercampaignform";
+        const EMAIL: &str = "testcampaignuser@aaa.com";
+        const PASSWORD: &str = "longpassword";
+
+        const CAMPAIGN_NAME: &str = "testcampaignuser";
+
+        let app = get_app!(data).await;
+        delete_user(NAME, &data).await;
+        let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+        let cookies = get_cookie!(signin_resp);
+
+        let new = CreateReq {
+            name: CAMPAIGN_NAME.into(),
+        };
+
+        let new_resp = test::call_service(
+            &app,
+            post_request!(&new, PAGES.panel.campaigns.new, FORM)
+                .cookie(cookies.clone())
+                .to_request(),
+        )
+        .await;
+        assert_eq!(new_resp.status(), StatusCode::FOUND);
+        let headers = new_resp.headers();
+        assert_eq!(
+            headers.get(header::LOCATION).unwrap(),
+            PAGES.panel.campaigns.home,
+        );
+    }
+}

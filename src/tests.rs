@@ -1,10 +1,7 @@
 use std::sync::Arc;
 
 use actix_web::test;
-use actix_web::{
-    dev::ServiceResponse, error::ResponseError, http::StatusCode,
-    middleware as actix_middleware,
-};
+use actix_web::{dev::ServiceResponse, error::ResponseError, http::StatusCode};
 use serde::Serialize;
 
 use super::*;

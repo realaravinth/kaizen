@@ -57,6 +57,59 @@ pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(get_feedback);
 }
 
+pub mod runners {
+    use super::*;
+
+    pub async fn new(
+        payload: &CreateReq,
+        data: &AppData,
+        id: &Identity,
+    ) -> ServiceResult<CreateResp> {
+        let mut uuid;
+        let username = id.identity().unwrap();
+
+        loop {
+            uuid = get_uuid();
+
+            let res = sqlx::query!(
+                "INSERT INTO 
+                kaizen_campaign (name , uuid, user_id) 
+            VALUES 
+                ($1, $2, 
+                    (SELECT 
+                        ID 
+                    FROM 
+                        kaizen_users 
+                    WHERE 
+                        name = $3
+                    )
+                )",
+                &payload.name,
+                &uuid,
+                &username,
+            )
+            .execute(&data.db)
+            .await;
+
+            if res.is_ok() {
+                break;
+            } else if let Err(sqlx::Error::Database(err)) = res {
+                if err.code() == Some(Cow::from("23505"))
+                    && err.message().contains("kaizen_campaign_uuid_key")
+                {
+                    continue;
+                } else {
+                    return Err(sqlx::Error::Database(err).into());
+                }
+            }
+        }
+
+        Ok(CreateResp {
+            uuid: uuid.to_string(),
+        })
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct CreateReq {
     pub name: String,
@@ -76,49 +129,7 @@ pub async fn new(
     payload: web::Json<CreateReq>,
     data: AppData,
 ) -> ServiceResult<impl Responder> {
-    let username = id.identity().unwrap();
-    let mut uuid;
-
-    loop {
-        uuid = get_uuid();
-
-        let res = sqlx::query!(
-            "INSERT INTO 
-                kaizen_campaign (name , uuid, user_id) 
-            VALUES 
-                ($1, $2, 
-                    (SELECT 
-                        ID 
-                    FROM 
-                        kaizen_users 
-                    WHERE 
-                        name = $3
-                    )
-                )",
-            &payload.name,
-            &uuid,
-            &username,
-        )
-        .execute(&data.db)
-        .await;
-
-        if res.is_ok() {
-            break;
-        } else if let Err(sqlx::Error::Database(err)) = res {
-            if err.code() == Some(Cow::from("23505"))
-                && err.message().contains("kaizen_campaign_uuid_key")
-            {
-                continue;
-            } else {
-                return Err(sqlx::Error::Database(err).into());
-            }
-        }
-    }
-
-    let resp = CreateResp {
-        uuid: uuid.to_string(),
-    };
-
+    let resp = runners::new(&payload.into_inner(), &data, &id).await?;
     Ok(HttpResponse::Ok().json(resp))
 }
 

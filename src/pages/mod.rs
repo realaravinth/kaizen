@@ -55,7 +55,10 @@ mod tests {
 
         let app = get_app!(data).await;
 
-        let urls = vec![ PAGES.home, PAGES.panel.campaigns.home, PAGES.panel.campaigns.new,
+        let urls = vec![
+            PAGES.home,
+            PAGES.panel.campaigns.home,
+            PAGES.panel.campaigns.new,
         ];
 
         for url in urls.iter() {
