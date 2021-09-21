@@ -204,9 +204,6 @@ pub async fn get_feedback(
 Ok(feedback_resp)
 }
 
-
-
-
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -247,17 +244,18 @@ pub async fn delete(
 
     sqlx::query!(
         "DELETE 
-                    FROM kaizen_campaign 
-                WHERE 
-                    user_id = (SELECT 
-                                    ID 
-                                FROM 
-                                    kaizen_users 
-                                WHERE 
-                                    name = $1
-                            )
-                AND
-                    uuid = ($2)",
+            FROM kaizen_campaign 
+         WHERE 
+             user_id = (
+                 SELECT 
+                         ID 
+                 FROM 
+                         kaizen_users 
+                 WHERE 
+                         name = $1
+             )
+         AND
+            uuid = ($2)",
         &username,
         &uuid
     )

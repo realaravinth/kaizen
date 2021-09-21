@@ -31,7 +31,7 @@
           <td>
             <.= feedback.helpful .>
           </td>
-          <td>
+          <td class="feedback__description">
             <. if let Some(des) = &feedback.description { .>
               <. if des.len() > 40 { .>
                 <details>
