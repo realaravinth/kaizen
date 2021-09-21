@@ -18,7 +18,7 @@ use actix_web::{HttpResponse, Responder};
 use my_codegen::get;
 use sailfish::TemplateOnce;
 
-use crate::api::v1::campaign::{runner::list_campaign_runner, ListCampaignResp};
+use crate::api::v1::campaign::{runners::list_campaign_runner, ListCampaignResp};
 use crate::AppData;
 use crate::PAGES;
 

@@ -108,6 +108,47 @@ pub mod runners {
             uuid: uuid.to_string(),
         })
     }
+
+    pub async fn list_campaign_runner(
+        username: &str,
+        data: &AppData,
+    ) -> ServiceResult<Vec<ListCampaignResp>> {
+        struct ListCampaign {
+            name: String,
+            uuid: Uuid,
+        }
+
+        let mut campaigns = sqlx::query_as!(
+            ListCampaign,
+            "SELECT 
+            name, uuid
+        FROM 
+            kaizen_campaign 
+            WHERE
+                user_id = (
+                    SELECT 
+                        ID
+                    FROM 
+                        kaizen_users
+                    WHERE
+                        name = $1
+                )",
+            username
+        )
+        .fetch_all(&data.db)
+        .await?;
+
+        let mut list_resp = Vec::with_capacity(campaigns.len());
+        campaigns.drain(0..).for_each(|c| {
+            list_resp.push(ListCampaignResp {
+                name: c.name,
+                uuid: c.uuid.to_string(),
+            });
+        });
+
+        Ok(list_resp)
+    }
+
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -249,51 +290,7 @@ pub async fn list_campaign(
     data: AppData,
 ) -> ServiceResult<impl Responder> {
     let username = id.identity().unwrap();
-    let list_resp = runner::list_campaign_runner(&username, &data).await?;
+    let list_resp = runners::list_campaign_runner(&username, &data).await?;
 
     Ok(HttpResponse::Ok().json(list_resp))
-}
-
-pub mod runner {
-    use super::*;
-
-    pub async fn list_campaign_runner(
-        username: &str,
-        data: &AppData,
-    ) -> ServiceResult<Vec<ListCampaignResp>> {
-        struct ListCampaign {
-            name: String,
-            uuid: Uuid,
-        }
-
-        let mut campaigns = sqlx::query_as!(
-            ListCampaign,
-            "SELECT 
-            name, uuid
-        FROM 
-            kaizen_campaign 
-            WHERE
-                user_id = (
-                    SELECT 
-                        ID
-                    FROM 
-                        kaizen_users
-                    WHERE
-                        name = $1
-                )",
-            username
-        )
-        .fetch_all(&data.db)
-        .await?;
-
-        let mut list_resp = Vec::with_capacity(campaigns.len());
-        campaigns.drain(0..).for_each(|c| {
-            list_resp.push(ListCampaignResp {
-                name: c.name,
-                uuid: c.uuid.to_string(),
-            });
-        });
-
-        Ok(list_resp)
-    }
 }
