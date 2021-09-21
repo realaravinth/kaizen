@@ -21,12 +21,12 @@
         <. for campaign in data.iter() { .>
         <tr class="campaign__item">
           <td>
-            <a href="/campaign/<.= campaign.uuid .>/">
+            <a href="<.= crate::PAGES.panel.campaigns.get_feedback.replace("{uuid}", &campaign.uuid) .>">
               <p class="campaign__item-heading"><.= campaign.name .></p>
             </a>
           </td>
           <td>
-            <a href="/campaign/<.= campaign.uuid .>/">
+            <a href="<.= crate::PAGES.panel.campaigns.get_feedback.replace("{uuid}", &campaign.uuid) .>">
               <p class="campaign__item-text"><.= campaign.uuid .></p></a
             >
           </td>

@@ -1,0 +1,59 @@
+<. include!("../../../components/base/top.html"); .>
+<body class="panel__body">
+  <. include!("../../nav/index.html"); .>
+  <main class="panel__container">
+
+    <div class="asset__container">
+      <span class="asset__name">Campaign ID</span>
+      <code id="campaign-id" class="asset__value"><.= uuid .></code>
+    </div>
+
+    <. include!("../../../components/error/index.html"); .>
+    <. if feedbacks.is_empty() { .>
+      <p>
+        Looks like you don't have any feedback on this campaign.
+      </p>
+    <. } else { .>
+    <table class="feedback__table">
+      <thead class="feedback__heading">
+        <tr>
+          <th class="feedback__title-text--normal">Time</th>
+          <th class="feedback__title-text--small">Helpful</th>
+          <th class="feedback__title-text--large">Description</th>
+        </tr>
+      </thead>
+      <tbody class="feedback__body">
+        <. for feedback in feedbacks.iter() { .>
+        <tr class="feedback__item">
+          <td>
+            <.= feedback.time .>
+          </td>
+          <td>
+            <.= feedback.helpful .>
+          </td>
+          <td>
+            <. if let Some(des) = &feedback.description { .>
+              <. if des.len() > 40 { .>
+                <details>
+                  <. let (summary, rest) = des.split_at(40); .>
+                  <summary>
+                    <.= summary .>
+                  </summary>
+                  <.= rest .>
+                </details>
+              <. } else { .>
+                <.= des .>
+              <. } .>
+            <. } else { .>
+                -
+            <. } .>
+          </td>
+        </tr>
+        <. } .>
+      </tbody>
+    </table>
+    <. } .>
+  </main>
+  <. include!("../../../components/footer/index.html"); .>
+</body>
+<. include!("../../../components/base/bottom.html"); .>

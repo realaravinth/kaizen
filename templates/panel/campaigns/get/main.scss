@@ -14,23 +14,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-.footer {
-	font-size: 0.8rem;
-	padding: 0px 20px;
-
-	position: absolute;
-	bottom: 10px;
-	width: 100%;
+.feedback__table {
+    width: 80%;
+	margin: 40px;
 }
 
-.footer__section {
-	display: inline;
-	float: right;
+.feedback__title-text--small {
+	width: 50px;
 }
 
-.footer__item {
-	display: inline;
-	list-style: none;
-	padding: 10px;
+.feedback__title-text--large {
+	width: 350px;
+}
+
+.feedback__title-text--normal {
+	width: 150px;
 }

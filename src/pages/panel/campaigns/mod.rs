@@ -22,16 +22,21 @@ use crate::api::v1::campaign::{runners::list_campaign_runner, ListCampaignResp};
 use crate::AppData;
 use crate::PAGES;
 
+pub mod new;
+pub mod feedback;
+
 pub mod routes {
     pub struct Campaigns {
         pub home: &'static str,
         pub new: &'static str,
+        pub get_feedback: &'static str,
     }
     impl Campaigns {
         pub const fn new() -> Campaigns {
             Campaigns {
                 home: "/campaigns",
                 new: "/campaigns/new",
+            get_feedback: "/campaigns/{uuid}/feedback",
             }
         }
 
@@ -42,12 +47,12 @@ pub mod routes {
     }
 }
 
-pub mod new;
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);
     cfg.service(new::new_campaign);
     cfg.service(new::new_campaign_submit);
+    cfg.service(feedback::get_feedback);
 }
 
 #[derive(TemplateOnce)]

@@ -7,13 +7,13 @@
   <form
     action="<.= crate::PAGES.auth.join .>"
     method="POST"
-    class="auth__form"
+    class="form"
     accept-charset="utf-8"
   >
-    <label class="auth__form-label" for="username">
+    <label class="form__label" for="username">
       Username
       <input
-        class="auth__form-input"
+        class="form__input"
         name="username"
         required
         id="username"
@@ -21,20 +21,20 @@
       />
     </label>
 
-    <label class="auth__form-label" for="email">
+    <label class="form__label" for="email">
       Email(optional)
       <input
-        class="auth__form-input"
+        class="form__input"
         name="email"
         id="email"
         type="email"
       />
     </label>
 
-    <label class="auth__form-label" for="password">
+    <label class="form__label" for="password">
       password
       <input
-        class="auth__form-input"
+        class="form__input"
         name="password"
         required
         id="password"
@@ -42,10 +42,10 @@
       />
     </label>
 
-    <label class="auth__form-label" for="confirm_password">
+    <label class="form__label" for="confirm_password">
       Re-enter Password
       <input
-        class="auth__form-input"
+        class="form__input"
         name="confirm_password"
         required
         id="confirm_password"
@@ -53,13 +53,13 @@
       />
     </label>
 
-    <div class="auth__action">
+    <div class="form__action-container">
       <a href="/forgot-password">Forgot password?</a>
-      <button class="auth__form-submit" type="submit">Login</button>
+      <button class="form__submit" type="submit">Login</button>
     </div>
   </form>
 
-  <p class="auth__alt-action">
+  <p class="form__alt-action">
     Already have an account?
     <a href="<.= crate::PAGES.auth.login .>"> Login </a>
   </p>
