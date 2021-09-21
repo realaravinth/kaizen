@@ -149,6 +149,64 @@ pub mod runners {
         Ok(list_resp)
     }
 
+
+
+pub async fn get_feedback(
+    username: &str,
+    uuid: &str,
+    data: &AppData,
+) -> ServiceResult<Vec<GetFeedbackResp>> {
+    let uuid = Uuid::parse_str(uuid).map_err(|_| ServiceError::NotAnId)?;
+
+    struct Feedback {
+        time: OffsetDateTime,
+        description: Option<String>,
+        helpful: bool,
+    }
+
+    let mut feedback = sqlx::query_as!(
+        Feedback,
+        "SELECT 
+            time, description, helpful
+        FROM 
+            kaizen_feedback 
+        WHERE campaign_id = (
+            SELECT uuid 
+            FROM 
+                kaizen_campaign
+            WHERE
+                uuid = $1
+            AND
+                user_id = (
+                    SELECT 
+                        ID
+                    FROM 
+                        kaizen_users
+                    WHERE
+                        name = $2
+                )
+           )",
+        uuid,
+        username
+    )
+    .fetch_all(&data.db)
+    .await?;
+
+    let mut feedback_resp = Vec::with_capacity(feedback.len());
+    feedback.drain(0..).for_each(|f| {
+        feedback_resp.push(GetFeedbackResp {
+            time: f.time.unix_timestamp() as u64,
+            description: f.description,
+            helpful: f.helpful,
+        });
+    });
+
+Ok(feedback_resp)
+}
+
+
+
+
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -227,51 +285,7 @@ pub async fn get_feedback(
 ) -> ServiceResult<impl Responder> {
     let username = id.identity().unwrap();
     let path = path.into_inner();
-    let uuid = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
-
-    struct Feedback {
-        time: OffsetDateTime,
-        description: Option<String>,
-        helpful: bool,
-    }
-
-    let mut feedback = sqlx::query_as!(
-        Feedback,
-        "SELECT 
-            time, description, helpful
-        FROM 
-            kaizen_feedback 
-        WHERE campaign_id = (
-            SELECT uuid 
-            FROM 
-                kaizen_campaign
-            WHERE
-                uuid = $1
-            AND
-                user_id = (
-                    SELECT 
-                        ID
-                    FROM 
-                        kaizen_users
-                    WHERE
-                        name = $2
-                )
-           )",
-        &uuid,
-        &username
-    )
-    .fetch_all(&data.db)
-    .await?;
-
-    let mut feedback_resp = Vec::with_capacity(feedback.len());
-    feedback.drain(0..).for_each(|f| {
-        feedback_resp.push(GetFeedbackResp {
-            time: f.time.unix_timestamp() as u64,
-            description: f.description,
-            helpful: f.helpful,
-        });
-    });
-
+    let feedback_resp = runners::get_feedback(&username, &path, &data).await?;
     Ok(HttpResponse::Ok().json(feedback_resp))
 }
 
