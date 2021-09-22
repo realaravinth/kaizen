@@ -90,6 +90,24 @@ pub async fn rating(
 
     let now = OffsetDateTime::now_utc();
 
+    let res = sqlx::query!(
+        "
+       INSERT INTO kaizen_campaign_pages (campaign_id, page_url) 
+       VALUES ($1, $2)",
+        &campaign_id,
+        &payload.page_url
+    )
+    .execute(&data.db)
+    .await;
+
+    if let Err(sqlx::Error::Database(err)) = res {
+        if err.code() != Some(Cow::from("23505"))
+            || !err.message().contains("kaizen_campaign_pages_page_url_key")
+        {
+            return Err(sqlx::Error::Database(err).into());
+        }
+    }
+
     let mut uuid;
 
     loop {
@@ -98,27 +116,29 @@ pub async fn rating(
         let res = if payload.description.is_some() {
             sqlx::query!(
                 "INSERT INTO 
-                kaizen_feedback (helpful , description, uuid, campaign_id, time) 
-            VALUES 
-                ($1, $2, $3, $4, $5)",
+                kaizen_feedbacks (helpful , description, uuid, campaign_id, time, page_url) 
+            VALUES ($1, $2, $3, $4, $5, 
+                 (SELECT ID from kaizen_campaign_pages WHERE page_url = $6))",
                 &payload.helpful,
                 &payload.description.as_ref().unwrap(),
                 &uuid,
                 &campaign_id,
                 &now,
+                &payload.page_url,
             )
             .execute(&data.db)
             .await
         } else {
             sqlx::query!(
                 "INSERT INTO 
-                kaizen_feedback (helpful, uuid, campaign_id, time) 
-            VALUES 
-                ($1, $2, $3, $4)",
+                kaizen_feedbacks (helpful, uuid, campaign_id, time, page_url) 
+            VALUES ($1, $2, $3, $4, 
+                 (SELECT ID from kaizen_campaign_pages WHERE page_url = $5))",
                 &payload.helpful,
                 &uuid,
                 &campaign_id,
                 &now,
+                &payload.page_url,
             )
             .execute(&data.db)
             .await
@@ -162,7 +182,7 @@ pub async fn description(
     let now = OffsetDateTime::now_utc();
 
     sqlx::query!(
-        "UPDATE kaizen_feedback 
+        "UPDATE kaizen_feedbacks 
         SET 
             description = $1, time  = $2
         WHERE uuid = $3",

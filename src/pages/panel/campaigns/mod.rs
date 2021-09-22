@@ -22,8 +22,8 @@ use crate::api::v1::campaign::{runners::list_campaign_runner, ListCampaignResp};
 use crate::AppData;
 use crate::PAGES;
 
-pub mod new;
 pub mod feedback;
+pub mod new;
 
 pub mod routes {
     pub struct Campaigns {
@@ -36,7 +36,7 @@ pub mod routes {
             Campaigns {
                 home: "/campaigns",
                 new: "/campaigns/new",
-            get_feedback: "/campaigns/{uuid}/feedback",
+                get_feedback: "/campaigns/{uuid}/feedback",
             }
         }
 
@@ -46,7 +46,6 @@ pub mod routes {
         }
     }
 }
-
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);

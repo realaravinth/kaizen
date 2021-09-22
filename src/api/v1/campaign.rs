@@ -149,27 +149,25 @@ pub mod runners {
         Ok(list_resp)
     }
 
+    pub async fn get_feedback(
+        username: &str,
+        uuid: &str,
+        data: &AppData,
+    ) -> ServiceResult<Vec<GetFeedbackResp>> {
+        let uuid = Uuid::parse_str(uuid).map_err(|_| ServiceError::NotAnId)?;
 
+        struct Feedback {
+            time: OffsetDateTime,
+            description: Option<String>,
+            helpful: bool,
+        }
 
-pub async fn get_feedback(
-    username: &str,
-    uuid: &str,
-    data: &AppData,
-) -> ServiceResult<Vec<GetFeedbackResp>> {
-    let uuid = Uuid::parse_str(uuid).map_err(|_| ServiceError::NotAnId)?;
-
-    struct Feedback {
-        time: OffsetDateTime,
-        description: Option<String>,
-        helpful: bool,
-    }
-
-    let mut feedback = sqlx::query_as!(
-        Feedback,
-        "SELECT 
+        let mut feedback = sqlx::query_as!(
+            Feedback,
+            "SELECT 
             time, description, helpful
         FROM 
-            kaizen_feedback 
+            kaizen_feedbacks
         WHERE campaign_id = (
             SELECT uuid 
             FROM 
@@ -186,24 +184,23 @@ pub async fn get_feedback(
                         name = $2
                 )
            )",
-        uuid,
-        username
-    )
-    .fetch_all(&data.db)
-    .await?;
+            uuid,
+            username
+        )
+        .fetch_all(&data.db)
+        .await?;
 
-    let mut feedback_resp = Vec::with_capacity(feedback.len());
-    feedback.drain(0..).for_each(|f| {
-        feedback_resp.push(GetFeedbackResp {
-            time: f.time.unix_timestamp() as u64,
-            description: f.description,
-            helpful: f.helpful,
+        let mut feedback_resp = Vec::with_capacity(feedback.len());
+        feedback.drain(0..).for_each(|f| {
+            feedback_resp.push(GetFeedbackResp {
+                time: f.time.unix_timestamp() as u64,
+                description: f.description,
+                helpful: f.helpful,
+            });
         });
-    });
 
-Ok(feedback_resp)
-}
-
+        Ok(feedback_resp)
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]

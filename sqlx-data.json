@@ -33,39 +33,6 @@
       "nullable": []
     }
   },
-  "0c4d4f8cf1600b5b25495de732b5e3b52772aa71d9f3b8fc0052a91944996dfe": {
-    "query": "SELECT \n            time, description, helpful\n        FROM \n            kaizen_feedback \n        WHERE campaign_id = (\n            SELECT uuid \n            FROM \n                kaizen_campaign\n            WHERE\n                uuid = $1\n            AND\n                user_id = (\n                    SELECT \n                        ID\n                    FROM \n                        kaizen_users\n                    WHERE\n                        name = $2\n                )\n           )",
-    "describe": {
-      "columns": [
-        {
-          "ordinal": 0,
-          "name": "time",
-          "type_info": "Timestamptz"
-        },
-        {
-          "ordinal": 1,
-          "name": "description",
-          "type_info": "Varchar"
-        },
-        {
-          "ordinal": 2,
-          "name": "helpful",
-          "type_info": "Bool"
-        }
-      ],
-      "parameters": {
-        "Left": [
-          "Uuid",
-          "Text"
-        ]
-      },
-      "nullable": [
-        false,
-        true,
-        false
-      ]
-    }
-  },
   "1f4e7a91145b807dcc869ed7ca1b94f4104c19dc7b2f2706903019878fe5bb23": {
     "query": "INSERT INTO \n                kaizen_campaign (name , uuid, user_id) \n            VALUES \n                ($1, $2, \n                    (SELECT \n                        ID \n                    FROM \n                        kaizen_users \n                    WHERE \n                        name = $3\n                    )\n                )",
     "describe": {
@@ -80,15 +47,14 @@
       "nullable": []
     }
   },
-  "20e40d5ca7eb73d7eb0fac9bfb7bcfa4703708132e353757d61011eedce8b7ab": {
-    "query": "UPDATE kaizen_feedback \n        SET \n            description = $1, time  = $2\n        WHERE uuid = $3",
+  "348662f3c3445bca883ffda62daf8ccc8c65f37fb471bb183f50aa3042ca2416": {
+    "query": "\n       INSERT INTO kaizen_campaign_pages (campaign_id, page_url) \n       VALUES ($1, $2)",
     "describe": {
       "columns": [],
       "parameters": {
         "Left": [
-          "Varchar",
-          "Timestamptz",
-          "Uuid"
+          "Uuid",
+          "Varchar"
         ]
       },
       "nullable": []
@@ -104,6 +70,22 @@
           "Text",
           "Varchar",
           "Varchar"
+        ]
+      },
+      "nullable": []
+    }
+  },
+  "3857b9accef6e145b096f576855665b959857a497add66fea472cf870fe012cc": {
+    "query": "INSERT INTO \n                kaizen_feedbacks (helpful, uuid, campaign_id, time, page_url) \n            VALUES ($1, $2, $3, $4, \n                 (SELECT ID from kaizen_campaign_pages WHERE page_url = $5))",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Bool",
+          "Uuid",
+          "Uuid",
+          "Timestamptz",
+          "Text"
         ]
       },
       "nullable": []
@@ -143,6 +125,20 @@
       "nullable": []
     }
   },
+  "48d2e43ec5bcdab82019ccc591aaa8fb93f26afb963aaf8987511ca16aa9dad7": {
+    "query": "UPDATE kaizen_feedbacks \n        SET \n            description = $1, time  = $2\n        WHERE uuid = $3",
+    "describe": {
+      "columns": [],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Timestamptz",
+          "Uuid"
+        ]
+      },
+      "nullable": []
+    }
+  },
   "4a0c353f57bf8cae9af76437dd6e1076c1ed7eda4888cb1fc6a0acf271f5285e": {
     "query": "DELETE FROM kaizen_users WHERE name = ($1)",
     "describe": {
@@ -155,16 +151,18 @@
       "nullable": []
     }
   },
-  "60134143897f7c6c10fe28b22ab0d2ba6b0fdc449395b99e6e37f6419c03425d": {
-    "query": "INSERT INTO \n                kaizen_feedback (helpful, uuid, campaign_id, time) \n            VALUES \n                ($1, $2, $3, $4)",
+  "4d6c41c17db755c77b87462b9b507a5d51089a34684489a0c54003f26302dd46": {
+    "query": "INSERT INTO \n                kaizen_feedbacks (helpful , description, uuid, campaign_id, time, page_url) \n            VALUES ($1, $2, $3, $4, $5, \n                 (SELECT ID from kaizen_campaign_pages WHERE page_url = $6))",
     "describe": {
       "columns": [],
       "parameters": {
         "Left": [
           "Bool",
+          "Varchar",
           "Uuid",
           "Uuid",
-          "Timestamptz"
+          "Timestamptz",
+          "Text"
         ]
       },
       "nullable": []
@@ -248,22 +246,6 @@
       "nullable": []
     }
   },
-  "89e83474e0378f9f0cc8d85cd2649adad31af7487dcf3f3d74c3b2ff09b546c5": {
-    "query": "INSERT INTO \n                kaizen_feedback (helpful , description, uuid, campaign_id, time) \n            VALUES \n                ($1, $2, $3, $4, $5)",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Bool",
-          "Varchar",
-          "Uuid",
-          "Uuid",
-          "Timestamptz"
-        ]
-      },
-      "nullable": []
-    }
-  },
   "a196c1cd72b5f8e5366f441bb1fd66267f8bc0845f3bb4cbda8f9621efd453d6": {
     "query": "SELECT EXISTS (SELECT 1 from kaizen_users WHERE name = $1)",
     "describe": {
@@ -313,6 +295,39 @@
         ]
       },
       "nullable": [
+        false
+      ]
+    }
+  },
+  "db75380622ab3bdb153e11ae35a9284e29240208f733355312c14bf1c155da17": {
+    "query": "SELECT \n            time, description, helpful\n        FROM \n            kaizen_feedbacks\n        WHERE campaign_id = (\n            SELECT uuid \n            FROM \n                kaizen_campaign\n            WHERE\n                uuid = $1\n            AND\n                user_id = (\n                    SELECT \n                        ID\n                    FROM \n                        kaizen_users\n                    WHERE\n                        name = $2\n                )\n           )",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "time",
+          "type_info": "Timestamptz"
+        },
+        {
+          "ordinal": 1,
+          "name": "description",
+          "type_info": "Varchar"
+        },
+        {
+          "ordinal": 2,
+          "name": "helpful",
+          "type_info": "Bool"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text"
+        ]
+      },
+      "nullable": [
+        false,
+        true,
         false
       ]
     }

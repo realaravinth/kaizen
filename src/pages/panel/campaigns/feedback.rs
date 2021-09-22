@@ -23,7 +23,7 @@ use lazy_static::lazy_static;
 use my_codegen::{get, post};
 use sailfish::TemplateOnce;
 
-use crate::api::v1::campaign::{runners, GetFeedbackResp, CreateReq};
+use crate::api::v1::campaign::{runners, CreateReq, GetFeedbackResp};
 use crate::errors::*;
 use crate::pages::errors::ErrorPage;
 use crate::AppData;
@@ -41,7 +41,7 @@ const PAGE: &str = "New Campaign";
 
 impl<'a> ViewFeedback<'a> {
     pub fn set_error(&mut self, title: &'a str, message: &'a str) {
-       self.error= Some(ErrorPage::new(title, message));
+        self.error = Some(ErrorPage::new(title, message));
     }
 
     pub fn new(feedbacks: Vec<GetFeedbackResp>, uuid: &'a str) -> Self {
@@ -53,7 +53,10 @@ impl<'a> ViewFeedback<'a> {
     }
 }
 
-#[get(path = "PAGES.panel.campaigns.get_feedback", wrap = "crate::CheckLogin")]
+#[get(
+    path = "PAGES.panel.campaigns.get_feedback",
+    wrap = "crate::CheckLogin"
+)]
 pub async fn get_feedback(
     id: Identity,
     data: AppData,
@@ -61,16 +64,16 @@ pub async fn get_feedback(
 ) -> impl Responder {
     let username = id.identity().unwrap();
     let path = path.into_inner();
-    let feedback_resp = runners::get_feedback(&username, &path, &data).await.unwrap();
-    let page = ViewFeedback::new(feedback_resp, &path).render_once().unwrap();
-            HttpResponse::Ok()
-                .content_type("text/html; charset=utf-8")
-                .body(page)
-                                    
-
-
+    let feedback_resp = runners::get_feedback(&username, &path, &data)
+        .await
+        .unwrap();
+    let page = ViewFeedback::new(feedback_resp, &path)
+        .render_once()
+        .unwrap();
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(page)
 }
-
 
 //#[post(path = "PAGES.panel.campaigns.new", wrap = "crate::CheckLogin")]
 //pub async fn new_campaign_submit(
