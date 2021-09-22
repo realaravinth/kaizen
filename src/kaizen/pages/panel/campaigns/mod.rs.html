@@ -78,7 +78,6 @@
 <span id="78">78</span>
 <span id="79">79</span>
 <span id="80">80</span>
-<span id="81">81</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -104,8 +103,8 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::AppData</span>;
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::PAGES</span>;
 
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">new</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">feedback</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">new</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">routes</span> {
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Campaigns</span> {
@@ -118,7 +117,7 @@
             <span class="ident">Campaigns</span> {
                 <span class="ident">home</span>: <span class="string">&quot;/campaigns&quot;</span>,
                 <span class="ident">new</span>: <span class="string">&quot;/campaigns/new&quot;</span>,
-            <span class="ident">get_feedback</span>: <span class="string">&quot;/campaigns/{uuid}/feedback&quot;</span>,
+                <span class="ident">get_feedback</span>: <span class="string">&quot;/campaigns/{uuid}/feedback&quot;</span>,
             }
         }
 
@@ -128,7 +127,6 @@
         }
     }
 }
-
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">services</span>(<span class="ident">cfg</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">actix_web::web::ServiceConfig</span>) {
     <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">home</span>);
