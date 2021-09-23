@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_feedback",""],["list_campaign_runner",""],["new",""]]});
+initSidebarItems({"fn":[["delete",""],["get_feedback",""],["list_campaign_runner",""],["new",""]]});

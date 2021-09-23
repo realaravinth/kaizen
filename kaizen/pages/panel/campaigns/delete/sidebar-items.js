@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["get_title",""]],"struct":[["delete_campaign",""],["delete_campaign_submit",""]]});

@@ -139,6 +139,10 @@
 <span id="139">139</span>
 <span id="140">140</span>
 <span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -180,6 +184,10 @@
         <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">LOGO</span>: <span class="ident">Img</span> <span class="op">=</span> <span class="ident">Img</span> {
             <span class="ident">path</span>: <span class="ident">FILES</span>.<span class="ident">get</span>(<span class="string">&quot;./static/cache/img/logo.svg&quot;</span>).<span class="ident">unwrap</span>(),
             <span class="ident">name</span>: <span class="string">&quot;Kaizen logo&quot;</span>
+        };
+        <span class="kw">pub</span> <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">TRASH</span>: <span class="ident">Img</span> <span class="op">=</span> <span class="ident">Img</span> {
+            <span class="ident">path</span>: <span class="ident">FILES</span>.<span class="ident">get</span>(<span class="string">&quot;./static/cache/img/trash.svg&quot;</span>).<span class="ident">unwrap</span>(),
+            <span class="ident">name</span>: <span class="string">&quot;Trash logo&quot;</span>
         };
     }
 }
