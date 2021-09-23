@@ -15,31 +15,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 .auth__body {
-	height: 100vh;
-	max-height: 100vh;
-	overflow-y: hidden;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: hidden;
 }
 
 .auth__container {
-	width: 380px;
-	align-items: center;
-	margin: auto;
-	display: flex;
-	flex-direction: column;
+    width: 380px;
+    align-items: center;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .auth__logo {
-	width: 150px;
-	padding-left: 20px;
+    width: 150px;
+    padding-left: 20px;
 }
 
 .auth__demo-user__banner {
-	margin: auto;
-	margin-top: 5px;
-	font-size: 0.8rem;
-	text-align: center;
+    margin: auto;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    text-align: center;
 }
 
 .auth__demo-user__cred {
-	font-family: monospace, monospace;
+    font-family: monospace, monospace;
+}
+
+.sudo__message {
+    margin-top: 20px;
+    margin-bottom: 20px;
 }

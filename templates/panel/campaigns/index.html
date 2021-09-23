@@ -19,18 +19,19 @@
       </thead>
       <tbody class="campaign__body">
         <. for campaign in data.iter() { .>
-        <tr class="campaign__item">
-          <td>
-            <a href="<.= crate::PAGES.panel.campaigns.get_feedback.replace("{uuid}", &campaign.uuid) .>">
-              <p class="campaign__item-heading"><.= campaign.name .></p>
-            </a>
-          </td>
-          <td>
-            <a href="<.= crate::PAGES.panel.campaigns.get_feedback.replace("{uuid}", &campaign.uuid) .>">
-              <p class="campaign__item-text"><.= campaign.uuid .></p></a
-            >
-          </td>
-        </tr>
+          <. let route = crate::PAGES.panel.campaigns.get_feedback_route(&campaign.uuid); .>
+          <tr class="campaign__item">
+            <td>
+              <a href="<.= &route .>">
+                <p class="campaign__item-heading"><.= campaign.name .></p>
+              </a>
+            </td>
+            <td>
+              <a href="<.= &route .>">
+                <p class="campaign__item-text"><.= campaign.uuid .></p></a
+              >
+            </td>
+          </tr>
         <. } .>
       </tbody>
     </table>

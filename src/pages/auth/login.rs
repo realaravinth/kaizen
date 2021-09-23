@@ -66,7 +66,8 @@ pub async fn login_submit(
     payload: web::Form<runners::Login>,
     data: AppData,
 ) -> PageResult<impl Responder> {
-    match runners::login_runner(payload.into_inner(), &data).await {
+    let payload = payload.into_inner();
+    match runners::login_runner(&payload, &data).await {
         Ok(username) => {
             id.remember(username);
             Ok(HttpResponse::Found()

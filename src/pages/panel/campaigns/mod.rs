@@ -22,6 +22,7 @@ use crate::api::v1::campaign::{runners::list_campaign_runner, ListCampaignResp};
 use crate::AppData;
 use crate::PAGES;
 
+pub mod delete;
 pub mod feedback;
 pub mod new;
 
@@ -30,6 +31,7 @@ pub mod routes {
         pub home: &'static str,
         pub new: &'static str,
         pub get_feedback: &'static str,
+        pub delete: &'static str,
     }
     impl Campaigns {
         pub const fn new() -> Campaigns {
@@ -37,7 +39,16 @@ pub mod routes {
                 home: "/campaigns",
                 new: "/campaigns/new",
                 get_feedback: "/campaigns/{uuid}/feedback",
+                delete: "/campaigns/{uuid}/delete",
             }
+        }
+
+        pub fn get_delete_route(&self, campaign_id: &str) -> String {
+            self.delete.replace("{uuid}", campaign_id)
+        }
+
+        pub fn get_feedback_route(&self, campaign_id: &str) -> String {
+            self.get_feedback.replace("{uuid}", campaign_id)
         }
 
         pub const fn get_sitemap() -> [&'static str; 2] {
@@ -52,6 +63,8 @@ pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(new::new_campaign);
     cfg.service(new::new_campaign_submit);
     cfg.service(feedback::get_feedback);
+    cfg.service(delete::delete_campaign);
+    cfg.service(delete::delete_campaign_submit);
 }
 
 #[derive(TemplateOnce)]

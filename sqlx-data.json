@@ -249,6 +249,27 @@
       "nullable": []
     }
   },
+  "a9b4d9cbe9dbdf6877901f88dbb7f630a831ba83cc7711eeb74c860ee181bc8c": {
+    "query": "SELECT name \n            FROM kaizen_campaign \n            WHERE uuid = $1 \n            AND\n                user_id = (\n                    SELECT \n                        ID\n                    FROM \n                        kaizen_users\n                    WHERE\n                        name = $2\n                )\n           ",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "name",
+          "type_info": "Varchar"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Text"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
   "ae9c121d622569a476e8283201a29979aee7c2840f6f06c500dbf578a4641b78": {
     "query": "SELECT secret  FROM kaizen_users WHERE name = ($1)",
     "describe": {
@@ -261,6 +282,27 @@
       ],
       "parameters": {
         "Left": [
+          "Text"
+        ]
+      },
+      "nullable": [
+        false
+      ]
+    }
+  },
+  "ced6b09ef0c7d4b7b105f8b71dd97244cb1261f580694aec2ac476808f95430a": {
+    "query": "SELECT name \n     FROM kaizen_campaign\n     WHERE \n         uuid = $1\n     AND\n        user_id = (SELECT ID from kaizen_users WHERE name = $2)",
+    "describe": {
+      "columns": [
+        {
+          "ordinal": 0,
+          "name": "name",
+          "type_info": "Varchar"
+        }
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
           "Text"
         ]
       },

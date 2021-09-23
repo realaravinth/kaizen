@@ -44,6 +44,9 @@ mod tests {
         const NAME: &str = "templateuser";
         const PASSWORD: &str = "longpassword";
         const EMAIL: &str = "templateuser@a.com";
+        const CAMPAIGN_NAME: &str = "delcappageusercamaping";
+
+        
 
         let data = Data::new().await;
         {
@@ -53,12 +56,18 @@ mod tests {
         let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
         let cookies = get_cookie!(signin_resp);
 
+
+        let campaign =
+            create_new_campaign(CAMPAIGN_NAME, data.clone(), cookies.clone()).await;
+
         let app = get_app!(data).await;
 
         let urls = vec![
-            PAGES.home,
-            PAGES.panel.campaigns.home,
-            PAGES.panel.campaigns.new,
+            PAGES.home.into(),
+            PAGES.panel.campaigns.home.into(),
+            PAGES.panel.campaigns.new.into(),
+            PAGES.panel.campaigns.get_feedback_route(&campaign.uuid),
+            PAGES.panel.campaigns.get_delete_route(&campaign.uuid),
         ];
 
         for url in urls.iter() {

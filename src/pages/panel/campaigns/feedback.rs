@@ -14,42 +14,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use std::convert::From;
-
 use actix_identity::Identity;
-use actix_web::HttpResponseBuilder;
-use actix_web::{error::ResponseError, http::header, web, HttpResponse, Responder};
-use lazy_static::lazy_static;
-use my_codegen::{get, post};
+use actix_web::{web, HttpResponse, Responder};
+use my_codegen::get;
 use sailfish::TemplateOnce;
 
-use crate::api::v1::campaign::{runners, CreateReq, GetFeedbackResp};
-use crate::errors::*;
-use crate::pages::errors::ErrorPage;
+use crate::api::v1::campaign::{runners, GetFeedbackResp};
 use crate::AppData;
 use crate::PAGES;
 
 #[derive(TemplateOnce)]
 #[template(path = "panel/campaigns/get/index.html")]
 struct ViewFeedback<'a> {
-    error: Option<ErrorPage<'a>>,
-    feedbacks: Vec<GetFeedbackResp>,
+    campaign: GetFeedbackResp,
     uuid: &'a str,
 }
 
 const PAGE: &str = "New Campaign";
 
 impl<'a> ViewFeedback<'a> {
-    pub fn set_error(&mut self, title: &'a str, message: &'a str) {
-        self.error = Some(ErrorPage::new(title, message));
-    }
-
-    pub fn new(feedbacks: Vec<GetFeedbackResp>, uuid: &'a str) -> Self {
-        Self {
-            feedbacks,
-            uuid,
-            error: None,
-        }
+    pub fn new(campaign: GetFeedbackResp, uuid: &'a str) -> Self {
+        Self { campaign, uuid }
     }
 }
 
@@ -74,76 +59,3 @@ pub async fn get_feedback(
         .content_type("text/html; charset=utf-8")
         .body(page)
 }
-
-//#[post(path = "PAGES.panel.campaigns.new", wrap = "crate::CheckLogin")]
-//pub async fn new_campaign_submit(
-//    id: Identity,
-//    payload: web::Form<CreateReq>,
-//    data: AppData,
-//) -> PageResult<impl Responder> {
-//    match runners::new(&payload.into_inner(), &data, &id).await {
-//        Ok(_) => {
-//            Ok(HttpResponse::Found()
-//                //TODO show stats of new campaign
-//                .insert_header((header::LOCATION, PAGES.panel.campaigns.home))
-//                .finish())
-//        }
-//        Err(e) => {
-//            let status = e.status_code();
-//            let heading = status.canonical_reason().unwrap_or("Error");
-//
-//            Ok(HttpResponseBuilder::new(status)
-//                .content_type("text/html; charset=utf-8")
-//                .body(
-//                    ViewFeedback::new(heading, &format!("{}", e))
-//                        .render_once()
-//                        .unwrap(),
-//                ))
-//        }
-//    }
-//}
-//
-//#[cfg(test)]
-//mod tests {
-//    use actix_web::test;
-//
-//    use super::*;
-//
-//    use crate::data::Data;
-//    use crate::tests::*;
-//    use crate::*;
-//    use actix_web::http::StatusCode;
-//
-//    #[actix_rt::test]
-//    async fn new_campaign_form_works() {
-//        let data = Data::new().await;
-//        const NAME: &str = "testusercampaignform";
-//        const EMAIL: &str = "testcampaignuser@aaa.com";
-//        const PASSWORD: &str = "longpassword";
-//
-//        const CAMPAIGN_NAME: &str = "testcampaignuser";
-//
-//        let app = get_app!(data).await;
-//        delete_user(NAME, &data).await;
-//        let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
-//        let cookies = get_cookie!(signin_resp);
-//
-//        let new = CreateReq {
-//            name: CAMPAIGN_NAME.into(),
-//        };
-//
-//        let new_resp = test::call_service(
-//            &app,
-//            post_request!(&new, PAGES.panel.campaigns.new, FORM)
-//                .cookie(cookies.clone())
-//                .to_request(),
-//        )
-//        .await;
-//        assert_eq!(new_resp.status(), StatusCode::FOUND);
-//        let headers = new_resp.headers();
-//        assert_eq!(
-//            headers.get(header::LOCATION).unwrap(),
-//            PAGES.panel.campaigns.home,
-//        );
-//    }
-//}

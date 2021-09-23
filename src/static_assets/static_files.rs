@@ -39,6 +39,10 @@ pub mod assets {
             path: FILES.get("./static/cache/img/logo.svg").unwrap(),
             name: "Kaizen logo"
         };
+        pub static ref TRASH: Img = Img {
+            path: FILES.get("./static/cache/img/trash.svg").unwrap(),
+            name: "Trash logo"
+        };
     }
 }
 

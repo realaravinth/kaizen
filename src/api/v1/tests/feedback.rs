@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use crate::api::v1::feedback::{RatingReq, URL_MAX_LENGTH};
-use crate::api::v1::{get_random, ROUTES};
+use crate::api::v1::get_random;
 use crate::data::Data;
 use crate::errors::*;
 use crate::*;
@@ -48,7 +48,7 @@ async fn feedback_page_url_length() {
         page_url: url,
     };
 
-    let add_feedback_route = add_feedback_route(&uuid);
+    let add_feedback_route = V1_API_ROUTES.feedback.add_feedback_route(&uuid.uuid);
 
     bad_post_req_test(
         NAME,
@@ -85,7 +85,7 @@ async fn feedback_works() {
         page_url: PAGE_URL.into(),
     };
 
-    let bad_feedback_url = ROUTES.feedback.rating.replace("{campaign_id}", NAME);
+    let bad_feedback_url = V1_API_ROUTES.feedback.add_feedback_route(NAME);
 
     bad_post_req_test(
         NAME,
@@ -120,8 +120,8 @@ async fn feedback_works() {
 
     add_feedback(&rating, &uuid, data.clone(), cookies.clone()).await;
 
-    let feedbacks = get_feedback(&uuid, data, cookies).await;
-    assert!(feedbacks.iter().any(|f| f.description == NAME));
+    let campaign = get_feedback(&uuid, data, cookies).await;
+    assert!(campaign.feedbacks.iter().any(|f| f.description == NAME));
 }
 
 #[actix_rt::test]
@@ -153,11 +153,7 @@ async fn feedback_duplicate_page_url_works() {
         feedback_ids.push(feedback_id);
     }
 
-    let feedbacks = get_feedback(&uuid, data, cookies).await;
-
-    assert_eq!(feedbacks.len(), count);
-    feedbacks
-        .iter()
-        .for_each(|f| println!("{:?}", f.description));
-    assert!(feedbacks.iter().any(|f| f.description == NAME));
+    let campaign = get_feedback(&uuid, data, cookies).await;
+    assert_eq!(campaign.feedbacks.len(), count);
+    assert!(campaign.feedbacks.iter().any(|f| f.description == NAME));
 }

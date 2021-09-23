@@ -18,6 +18,7 @@ use std::borrow::Cow;
 
 use actix_identity::Identity;
 use actix_web::{web, HttpResponse, Responder};
+use futures::try_join;
 use serde::{Deserialize, Serialize};
 use sqlx::types::time::OffsetDateTime;
 use uuid::Uuid;
@@ -46,6 +47,14 @@ pub mod routes {
                 get_feedback,
                 list,
             }
+        }
+
+        pub fn get_feedback_route(&self, campaign_id: &str) -> String {
+            self.get_feedback.replace("{uuid}", &campaign_id)
+        }
+
+        pub fn get_delete_route(&self, campaign_id: &str) -> String {
+            self.delete.replace("{uuid}", &campaign_id)
         }
     }
 }
@@ -153,17 +162,41 @@ pub mod runners {
         username: &str,
         uuid: &str,
         data: &AppData,
-    ) -> ServiceResult<Vec<GetFeedbackResp>> {
+    ) -> ServiceResult<GetFeedbackResp> {
         let uuid = Uuid::parse_str(uuid).map_err(|_| ServiceError::NotAnId)?;
 
-        struct Feedback {
+        struct FeedbackInternal {
             time: OffsetDateTime,
             description: String,
             helpful: bool,
         }
 
-        let mut feedback = sqlx::query_as!(
-            Feedback,
+        struct Name {
+            name: String,
+        }
+
+        let name_fut = sqlx::query_as!(
+            Name,
+            "SELECT name 
+            FROM kaizen_campaign 
+            WHERE uuid = $1 
+            AND
+                user_id = (
+                    SELECT 
+                        ID
+                    FROM 
+                        kaizen_users
+                    WHERE
+                        name = $2
+                )
+           ",
+            uuid,
+            username
+        )
+        .fetch_one(&data.db); //.await?;
+
+        let feedback_fut = sqlx::query_as!(
+            FeedbackInternal,
             "SELECT 
             time, description, helpful
         FROM 
@@ -187,19 +220,50 @@ pub mod runners {
             uuid,
             username
         )
-        .fetch_all(&data.db)
-        .await?;
+        .fetch_all(&data.db);
+        let (name, mut feedbacks) = try_join!(name_fut, feedback_fut)?;
+        //.await?;
 
-        let mut feedback_resp = Vec::with_capacity(feedback.len());
-        feedback.drain(0..).for_each(|f| {
-            feedback_resp.push(GetFeedbackResp {
+        let mut feedback_resp = Vec::with_capacity(feedbacks.len());
+        feedbacks.drain(0..).for_each(|f| {
+            feedback_resp.push(Feedback {
                 time: f.time.unix_timestamp() as u64,
                 description: f.description,
                 helpful: f.helpful,
             });
         });
 
-        Ok(feedback_resp)
+        Ok(GetFeedbackResp {
+            feedbacks: feedback_resp,
+            name: name.name,
+        })
+    }
+
+    pub async fn delete(
+        uuid: &Uuid,
+        username: &str,
+        data: &AppData,
+    ) -> ServiceResult<()> {
+        sqlx::query!(
+            "DELETE 
+            FROM kaizen_campaign 
+         WHERE 
+             user_id = (
+                 SELECT 
+                         ID 
+                 FROM 
+                         kaizen_users 
+                 WHERE 
+                         name = $1
+             )
+         AND
+            uuid = ($2)",
+            username,
+            uuid
+        )
+        .execute(&data.db)
+        .await?;
+        Ok(())
     }
 }
 
@@ -238,35 +302,21 @@ pub async fn delete(
     let username = id.identity().unwrap();
     let path = path.into_inner();
     let uuid = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
-
-    sqlx::query!(
-        "DELETE 
-            FROM kaizen_campaign 
-         WHERE 
-             user_id = (
-                 SELECT 
-                         ID 
-                 FROM 
-                         kaizen_users 
-                 WHERE 
-                         name = $1
-             )
-         AND
-            uuid = ($2)",
-        &username,
-        &uuid
-    )
-    .execute(&data.db)
-    .await?;
-
+    runners::delete(&uuid, &username, &data).await?;
     Ok(HttpResponse::Ok())
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct GetFeedbackResp {
+pub struct Feedback {
     pub time: u64,
     pub description: String,
     pub helpful: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct GetFeedbackResp {
+    pub name: String,
+    pub feedbacks: Vec<Feedback>,
 }
 
 #[my_codegen::post(

@@ -72,7 +72,7 @@ pub mod runners {
     }
 
     /// returns Ok(()) when everything checks out and the user is authenticated. Erros otherwise
-    pub async fn login_runner(payload: Login, data: &AppData) -> ServiceResult<String> {
+    pub async fn login_runner(payload: &Login, data: &AppData) -> ServiceResult<String> {
         use argon2_creds::Config;
         use sqlx::Error::RowNotFound;
 
@@ -120,7 +120,7 @@ pub mod runners {
             match username_fut {
                 Ok(s) => {
                     verify(&s.password, &payload.password)?;
-                    Ok(payload.login)
+                    Ok(payload.login.clone())
                 }
                 Err(RowNotFound) => Err(ServiceError::AccountNotFound),
                 Err(_) => Err(ServiceError::InternalServerError),
@@ -216,7 +216,8 @@ async fn login(
     payload: web::Json<runners::Login>,
     data: AppData,
 ) -> ServiceResult<impl Responder> {
-    let username = runners::login_runner(payload.into_inner(), &data).await?;
+    let payload = payload.into_inner();
+    let username = runners::login_runner(&payload, &data).await?;
     id.remember(username);
     Ok(HttpResponse::Ok())
 }

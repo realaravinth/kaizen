@@ -14,31 +14,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-use std::fmt::Display;
-
-use sailfish::runtime::Render;
 use sailfish::TemplateOnce;
+
+use crate::pages::errors::ErrorPage;
 
 #[derive(Clone, TemplateOnce)]
 #[template(path = "auth/sudo/index.html")]
-pub struct SudoPage<'a, K, V>
-where
-    K: Display + Render,
-    V: Display + Render,
-{
+pub struct SudoPage<'a> {
     url: &'a str,
-    _data: Option<Vec<(K, V)>>,
+    title: &'a str,
+    error: Option<ErrorPage<'a>>,
 }
 
 pub const PAGE: &str = "Confirm Access";
 
-impl<'a, K, V> SudoPage<'a, K, V>
-where
-    K: Display + Render,
-    V: Display + Render,
-{
-    pub fn new(url: &'a str, _data: Option<Vec<(K, V)>>) -> Self {
-        Self { url, _data }
+impl<'a> SudoPage<'a> {
+    pub fn new(url: &'a str, title: &'a str) -> Self {
+        Self {
+            url,
+            title,
+            error: None,
+        }
+    }
+
+    pub fn set_err(&mut self, err_title: &'a str, message: &'a str) {
+        self.error = Some(ErrorPage::new(err_title, message));
     }
 }

@@ -48,6 +48,10 @@ pub mod routes {
             let rating = "/api/v1/feedback/{campaign_id}/rating";
             Feedback { rating }
         }
+
+        pub fn add_feedback_route(&self, campaign_id: &str) -> String {
+            self.rating.replace("{campaign_id}", &campaign_id)
+        }
     }
 }
 

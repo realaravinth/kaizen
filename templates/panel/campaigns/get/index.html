@@ -2,14 +2,17 @@
 <body class="panel__body">
   <. include!("../../nav/index.html"); .>
   <main class="panel__container">
+    <h1><.= campaign.name .></h1>
+    <a href="<.= crate::PAGES.panel.campaigns.get_delete_route(&uuid) .>" >
+      <img src="<.= crate::assets::TRASH.path .>" alt="<.= crate::assets::TRASH.name .>" class="feedback__trash-logo" />
+    </a>
 
     <div class="asset__container">
       <span class="asset__name">Campaign ID</span>
       <code id="campaign-id" class="asset__value"><.= uuid .></code>
     </div>
 
-    <. include!("../../../components/error/index.html"); .>
-    <. if feedbacks.is_empty() { .>
+    <. if campaign.feedbacks.is_empty() { .>
       <p>
         Looks like you don't have any feedback on this campaign.
       </p>
@@ -23,7 +26,7 @@
         </tr>
       </thead>
       <tbody class="feedback__body">
-        <. for feedback in feedbacks.iter() { .>
+        <. for feedback in campaign.feedbacks.iter() { .>
         <tr class="feedback__item">
           <td>
             <.= feedback.time .>

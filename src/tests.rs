@@ -204,7 +204,7 @@ pub async fn delete_campaign(
     data: Arc<Data>,
     cookies: Cookie<'_>,
 ) {
-    let del_route = get_delete_route(&camapign);
+    let del_route = V1_API_ROUTES.campaign.get_delete_route(&camapign.uuid);
     let app = get_app!(data).await;
     let del_resp =
         test::call_service(&app, post_request!(&del_route).cookie(cookies).to_request())
@@ -234,7 +234,7 @@ pub async fn add_feedback(
     data: Arc<Data>,
     cookies: Cookie<'_>,
 ) -> RatingResp {
-    let add_feedback_route = add_feedback_route(campaign);
+    let add_feedback_route = V1_API_ROUTES.feedback.add_feedback_route(&campaign.uuid);
     let app = get_app!(data).await;
     let add_feedback_resp = test::call_service(
         &app,
@@ -252,8 +252,8 @@ pub async fn get_feedback(
     campaign: &CreateResp,
     data: Arc<Data>,
     cookies: Cookie<'_>,
-) -> Vec<GetFeedbackResp> {
-    let get_feedback_route = get_feedback_route(campaign);
+) -> GetFeedbackResp {
+    let get_feedback_route = V1_API_ROUTES.campaign.get_feedback_route(&campaign.uuid);
     let app = get_app!(data).await;
 
     let get_feedback_resp = test::call_service(
@@ -265,25 +265,4 @@ pub async fn get_feedback(
     .await;
     assert_eq!(get_feedback_resp.status(), StatusCode::OK);
     test::read_body_json(get_feedback_resp).await
-}
-
-pub fn add_feedback_route(campaign: &CreateResp) -> String {
-    V1_API_ROUTES
-        .feedback
-        .rating
-        .replace("{campaign_id}", &campaign.uuid)
-}
-
-pub fn get_feedback_route(campaign: &CreateResp) -> String {
-    V1_API_ROUTES
-        .campaign
-        .get_feedback
-        .replace("{uuid}", &campaign.uuid)
-}
-
-pub fn get_delete_route(campaign: &CreateResp) -> String {
-    crate::V1_API_ROUTES
-        .campaign
-        .delete
-        .replace("{uuid}", &campaign.uuid)
 }
