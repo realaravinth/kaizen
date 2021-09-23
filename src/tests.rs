@@ -1,13 +1,16 @@
 use std::sync::Arc;
 
-use actix_web::test;
 use actix_web::cookie::Cookie;
+use actix_web::test;
 use actix_web::{dev::ServiceResponse, error::ResponseError, http::StatusCode};
 use serde::Serialize;
 
 use super::*;
 use crate::api::v1::auth::runners::{Login, Register};
-use crate::api::v1::campaign::{CreateReq, CreateResp, ListCampaignResp};
+use crate::api::v1::campaign::{
+    CreateReq, CreateResp, GetFeedbackResp, ListCampaignResp,
+};
+use crate::api::v1::feedback::{RatingReq, RatingResp};
 use crate::api::v1::ROUTES;
 use crate::data::Data;
 use crate::errors::*;
@@ -174,8 +177,11 @@ pub async fn bad_post_req_test_witout_payload(
     assert_eq!(resp_err.error, format!("{}", err));
 }
 
-
-pub async fn create_new_campaign(campaign_name: &str, data: Arc<Data>, cookies: Cookie<'_>) -> CreateResp {
+pub async fn create_new_campaign(
+    campaign_name: &str,
+    data: Arc<Data>,
+    cookies: Cookie<'_>,
+) -> CreateResp {
     let new = CreateReq {
         name: campaign_name.into(),
     };
@@ -193,20 +199,23 @@ pub async fn create_new_campaign(campaign_name: &str, data: Arc<Data>, cookies: 
     uuid
 }
 
-pub async fn delete_campaign(camapign: &CreateResp, data: Arc<Data>, cookies: Cookie<'_>) {
-    let del_route = crate::V1_API_ROUTES.campaign.delete.replace("{uuid}", &camapign.uuid);
+pub async fn delete_campaign(
+    camapign: &CreateResp,
+    data: Arc<Data>,
+    cookies: Cookie<'_>,
+) {
+    let del_route = get_delete_route(&camapign);
     let app = get_app!(data).await;
-    let del_resp = test::call_service(
-        &app,
-        post_request!(&del_route)
-            .cookie(cookies)
-            .to_request(),
-    )
-    .await;
+    let del_resp =
+        test::call_service(&app, post_request!(&del_route).cookie(cookies).to_request())
+            .await;
     assert_eq!(del_resp.status(), StatusCode::OK);
 }
 
-pub async fn list_campaings(data: Arc<Data>, cookies: Cookie<'_>) -> Vec<ListCampaignResp> {
+pub async fn list_campaings(
+    data: Arc<Data>,
+    cookies: Cookie<'_>,
+) -> Vec<ListCampaignResp> {
     let app = get_app!(data).await;
     let list_resp = test::call_service(
         &app,
@@ -217,4 +226,64 @@ pub async fn list_campaings(data: Arc<Data>, cookies: Cookie<'_>) -> Vec<ListCam
     .await;
     assert_eq!(list_resp.status(), StatusCode::OK);
     test::read_body_json(list_resp).await
+}
+
+pub async fn add_feedback(
+    rating: &RatingReq,
+    campaign: &CreateResp,
+    data: Arc<Data>,
+    cookies: Cookie<'_>,
+) -> RatingResp {
+    let add_feedback_route = add_feedback_route(campaign);
+    let app = get_app!(data).await;
+    let add_feedback_resp = test::call_service(
+        &app,
+        post_request!(&rating, &add_feedback_route)
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
+    assert_eq!(add_feedback_resp.status(), StatusCode::OK);
+
+    test::read_body_json(add_feedback_resp).await
+}
+
+pub async fn get_feedback(
+    campaign: &CreateResp,
+    data: Arc<Data>,
+    cookies: Cookie<'_>,
+) -> Vec<GetFeedbackResp> {
+    let get_feedback_route = get_feedback_route(campaign);
+    let app = get_app!(data).await;
+
+    let get_feedback_resp = test::call_service(
+        &app,
+        post_request!(&get_feedback_route)
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
+    assert_eq!(get_feedback_resp.status(), StatusCode::OK);
+    test::read_body_json(get_feedback_resp).await
+}
+
+pub fn add_feedback_route(campaign: &CreateResp) -> String {
+    V1_API_ROUTES
+        .feedback
+        .rating
+        .replace("{campaign_id}", &campaign.uuid)
+}
+
+pub fn get_feedback_route(campaign: &CreateResp) -> String {
+    V1_API_ROUTES
+        .campaign
+        .get_feedback
+        .replace("{uuid}", &campaign.uuid)
+}
+
+pub fn get_delete_route(campaign: &CreateResp) -> String {
+    crate::V1_API_ROUTES
+        .campaign
+        .delete
+        .replace("{uuid}", &campaign.uuid)
 }

@@ -308,45 +308,40 @@ pub async fn list_campaign(
 mod tests {
     use super::*;
 
+    use crate::api::v1::ROUTES;
+    use crate::data::Data;
+    use crate::*;
 
-use crate::api::v1::ROUTES;
-use crate::data::Data;
-use crate::*;
+    use crate::tests::*;
 
-use crate::tests::*;
+    #[actix_rt::test]
+    async fn campaign_works() {
+        let data = Data::new().await;
+        const NAME: &str = "testcampaignuser";
+        const PASSWORD: &str = "longpassword";
+        const EMAIL: &str = "testcampaignuser@a.com";
+        const CAMPAIGN_NAME: &str = "testcampaignuser";
 
-#[actix_rt::test]
-async fn campaign_works() {
-    let data = Data::new().await;
-    const NAME: &str = "testcampaignuser";
-    const PASSWORD: &str = "longpassword";
-    const EMAIL: &str = "testcampaignuser@a.com";
-    const CAMPAIGN_NAME: &str = "testcampaignuser";
+        delete_user(NAME, &data).await;
+        let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+        let cookies = get_cookie!(signin_resp);
 
-    delete_user(NAME, &data).await;
-    let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
-    let cookies = get_cookie!(signin_resp);
+        let uuid = create_new_campaign(NAME, data.clone(), cookies.clone()).await;
 
-    let uuid = create_new_campaign(NAME, data.clone(), cookies.clone()).await;
+        let list = list_campaings(data.clone(), cookies.clone()).await;
+        assert!(list.iter().any(|c| c.name == CAMPAIGN_NAME));
 
-    let list = list_campaings(data.clone(), cookies.clone()).await;
-    assert!(list.iter().any(|c| c.name == CAMPAIGN_NAME));
+        bad_post_req_test_witout_payload(
+            NAME,
+            PASSWORD,
+            &ROUTES.campaign.delete.replace("{uuid}", NAME),
+            ServiceError::NotAnId,
+        )
+        .await;
 
-    bad_post_req_test_witout_payload(
-        NAME,
-        PASSWORD,
-        &ROUTES.campaign.delete.replace("{uuid}", NAME),
-        ServiceError::NotAnId,
-    )
-    .await;
+        delete_campaign(&uuid, data.clone(), cookies.clone()).await;
 
-    delete_campaign(&uuid, data.clone(), cookies.clone()).await;
-
-
-    let list = list_campaings(data.clone(), cookies.clone()).await;
-    assert!(!list.iter().any(|c| c.name == CAMPAIGN_NAME));
-}
-
-
-
+        let list = list_campaings(data.clone(), cookies.clone()).await;
+        assert!(!list.iter().any(|c| c.name == CAMPAIGN_NAME));
+    }
 }

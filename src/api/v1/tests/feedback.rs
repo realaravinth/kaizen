@@ -14,11 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web::http::StatusCode;
-use actix_web::test;
-
-use crate::api::v1::campaign::{CreateReq, CreateResp, GetFeedbackResp};
-use crate::api::v1::feedback::{RatingReq, RatingResp, URL_MAX_LENGTH};
+use crate::api::v1::feedback::{RatingReq, URL_MAX_LENGTH};
 use crate::api::v1::{get_random, ROUTES};
 use crate::data::Data;
 use crate::errors::*;
@@ -40,24 +36,11 @@ async fn feedback_page_url_length() {
         get_random(URL_MAX_LENGTH - PAGE_URL.len())
     );
 
-    let app = get_app!(data).await;
     delete_user(NAME, &data).await;
     let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
 
-    let new = CreateReq {
-        name: CAMPAIGN_NAME.into(),
-    };
-
-    let new_resp = test::call_service(
-        &app,
-        post_request!(&new, ROUTES.campaign.new)
-            .cookie(cookies.clone())
-            .to_request(),
-    )
-    .await;
-    assert_eq!(new_resp.status(), StatusCode::OK);
-    let uuid: CreateResp = test::read_body_json(new_resp).await;
+    let uuid = create_new_campaign(CAMPAIGN_NAME, data.clone(), cookies.clone()).await;
 
     let mut rating = RatingReq {
         helpful: true,
@@ -65,7 +48,7 @@ async fn feedback_page_url_length() {
         page_url: url,
     };
 
-    let add_feedback_route = ROUTES.feedback.rating.replace("{campaign_id}", &uuid.uuid);
+    let add_feedback_route = add_feedback_route(&uuid);
 
     bad_post_req_test(
         NAME,
@@ -78,15 +61,7 @@ async fn feedback_page_url_length() {
 
     rating.page_url = rating.page_url[0..(rating.page_url.len() - 1)].into();
 
-    //    rating.page_url = PAGE_URL.into();
-    let add_feedback_resp = test::call_service(
-        &app,
-        post_request!(&rating, &add_feedback_route)
-            .cookie(cookies.clone())
-            .to_request(),
-    )
-    .await;
-    assert_eq!(add_feedback_resp.status(), StatusCode::OK);
+    add_feedback(&rating, &uuid, data.clone(), cookies.clone()).await;
 }
 
 #[actix_rt::test]
@@ -98,24 +73,11 @@ async fn feedback_works() {
     const CAMPAIGN_NAME: &str = "testfeedbackuser";
     const PAGE_URL: &str = "http://example.com/foo";
 
-    let app = get_app!(data).await;
     delete_user(NAME, &data).await;
     let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
 
-    let new = CreateReq {
-        name: CAMPAIGN_NAME.into(),
-    };
-
-    let new_resp = test::call_service(
-        &app,
-        post_request!(&new, ROUTES.campaign.new)
-            .cookie(cookies.clone())
-            .to_request(),
-    )
-    .await;
-    assert_eq!(new_resp.status(), StatusCode::OK);
-    let uuid: CreateResp = test::read_body_json(new_resp).await;
+    let uuid = create_new_campaign(CAMPAIGN_NAME, data.clone(), cookies.clone()).await;
 
     let mut rating = RatingReq {
         helpful: true,
@@ -123,10 +85,12 @@ async fn feedback_works() {
         page_url: PAGE_URL.into(),
     };
 
+    let bad_feedback_url = ROUTES.feedback.rating.replace("{campaign_id}", NAME);
+
     bad_post_req_test(
         NAME,
         PASSWORD,
-        &ROUTES.feedback.rating.replace("{campaign_id}", NAME),
+        &bad_feedback_url,
         &rating,
         ServiceError::NotAnId,
     )
@@ -136,7 +100,7 @@ async fn feedback_works() {
     bad_post_req_test(
         NAME,
         PASSWORD,
-        &ROUTES.feedback.rating.replace("{campaign_id}", NAME),
+        &bad_feedback_url,
         &rating,
         ServiceError::NotAUrl,
     )
@@ -146,34 +110,18 @@ async fn feedback_works() {
     bad_post_req_test(
         NAME,
         PASSWORD,
-        &ROUTES.feedback.rating.replace("{campaign_id}", NAME),
+        &bad_feedback_url,
         &rating,
         ServiceError::URLTooLong,
     )
     .await;
 
     rating.page_url = PAGE_URL.into();
-    let add_feedback_route = ROUTES.feedback.rating.replace("{campaign_id}", &uuid.uuid);
-    let add_feedback_resp = test::call_service(
-        &app,
-        post_request!(&rating, &add_feedback_route)
-            .cookie(cookies.clone())
-            .to_request(),
-    )
-    .await;
-    assert_eq!(add_feedback_resp.status(), StatusCode::OK);
 
-    let get_feedback_route = ROUTES.campaign.get_feedback.replace("{uuid}", &uuid.uuid);
-    let get_feedback_resp = test::call_service(
-        &app,
-        post_request!(&get_feedback_route)
-            .cookie(cookies)
-            .to_request(),
-    )
-    .await;
-    assert_eq!(get_feedback_resp.status(), StatusCode::OK);
-    let feedback: Vec<GetFeedbackResp> = test::read_body_json(get_feedback_resp).await;
-    assert!(feedback.iter().any(|f| f.description == NAME));
+    add_feedback(&rating, &uuid, data.clone(), cookies.clone()).await;
+
+    let feedbacks = get_feedback(&uuid, data, cookies).await;
+    assert!(feedbacks.iter().any(|f| f.description == NAME));
 }
 
 #[actix_rt::test]
@@ -185,24 +133,11 @@ async fn feedback_duplicate_page_url_works() {
     const CAMPAIGN_NAME: &str = "testfeedbacspamkuser";
     const PAGE_URL: &str = "http://spam.example.com/foo";
 
-    let app = get_app!(data).await;
     delete_user(NAME, &data).await;
     let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
     let cookies = get_cookie!(signin_resp);
 
-    let new = CreateReq {
-        name: CAMPAIGN_NAME.into(),
-    };
-
-    let new_resp = test::call_service(
-        &app,
-        post_request!(&new, ROUTES.campaign.new)
-            .cookie(cookies.clone())
-            .to_request(),
-    )
-    .await;
-    assert_eq!(new_resp.status(), StatusCode::OK);
-    let uuid: CreateResp = test::read_body_json(new_resp).await;
+    let uuid = create_new_campaign(CAMPAIGN_NAME, data.clone(), cookies.clone()).await;
 
     let rating = RatingReq {
         helpful: true,
@@ -210,43 +145,19 @@ async fn feedback_duplicate_page_url_works() {
         page_url: PAGE_URL.into(),
     };
 
-    let add_feedback_route = ROUTES.feedback.rating.replace("{campaign_id}", &uuid.uuid);
     let count = 5;
     let mut feedback_ids = Vec::with_capacity(count);
     for _ in 0..count {
-        let add_feedback_resp = test::call_service(
-            &app,
-            post_request!(&rating, &add_feedback_route)
-                .cookie(cookies.clone())
-                .to_request(),
-        )
-        .await;
-        let status = add_feedback_resp.status();
-        if status != StatusCode::OK {
-            let resp_err: ErrorToResponse =
-                test::read_body_json(add_feedback_resp).await;
-            println!("{}", resp_err.error);
-            panic!();
-        }
-        //assert_eq!(add_feedback_resp.status(), StatusCode::OK);
-
-        let feedback_id: RatingResp = test::read_body_json(add_feedback_resp).await;
+        let feedback_id =
+            add_feedback(&rating, &uuid, data.clone(), cookies.clone()).await;
         feedback_ids.push(feedback_id);
     }
 
-    let get_feedback_route = ROUTES.campaign.get_feedback.replace("{uuid}", &uuid.uuid);
-    let get_feedback_resp = test::call_service(
-        &app,
-        post_request!(&get_feedback_route)
-            .cookie(cookies)
-            .to_request(),
-    )
-    .await;
-    assert_eq!(get_feedback_resp.status(), StatusCode::OK);
-    let feedback: Vec<GetFeedbackResp> = test::read_body_json(get_feedback_resp).await;
-    assert_eq!(feedback.len(), count);
-    feedback
+    let feedbacks = get_feedback(&uuid, data, cookies).await;
+
+    assert_eq!(feedbacks.len(), count);
+    feedbacks
         .iter()
         .for_each(|f| println!("{:?}", f.description));
-    assert!(feedback.iter().any(|f| f.description == NAME));
+    assert!(feedbacks.iter().any(|f| f.description == NAME));
 }
