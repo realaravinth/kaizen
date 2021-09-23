@@ -41,30 +41,24 @@ pub const URL_MAX_LENGTH: usize = 2048;
 pub mod routes {
     pub struct Feedback {
         pub rating: &'static str,
-        pub description: &'static str,
     }
 
     impl Feedback {
         pub const fn new() -> Feedback {
             let rating = "/api/v1/feedback/{campaign_id}/rating";
-            let description = "/api/v1/feedback/{feedback_id}/description";
-            Feedback {
-                rating,
-                description,
-            }
+            Feedback { rating }
         }
     }
 }
 
 pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(rating);
-    cfg.service(description);
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct RatingReq {
     pub helpful: bool,
-    pub description: Option<String>,
+    pub description: String,
     pub page_url: String,
 }
 
@@ -113,36 +107,20 @@ pub async fn rating(
     loop {
         uuid = get_uuid();
 
-        let res = if payload.description.is_some() {
-            sqlx::query!(
+        let res=    sqlx::query!(
                 "INSERT INTO 
                 kaizen_feedbacks (helpful , description, uuid, campaign_id, time, page_url) 
             VALUES ($1, $2, $3, $4, $5, 
                  (SELECT ID from kaizen_campaign_pages WHERE page_url = $6))",
                 &payload.helpful,
-                &payload.description.as_ref().unwrap(),
+                &payload.description,
                 &uuid,
                 &campaign_id,
                 &now,
                 &payload.page_url,
             )
             .execute(&data.db)
-            .await
-        } else {
-            sqlx::query!(
-                "INSERT INTO 
-                kaizen_feedbacks (helpful, uuid, campaign_id, time, page_url) 
-            VALUES ($1, $2, $3, $4, 
-                 (SELECT ID from kaizen_campaign_pages WHERE page_url = $5))",
-                &payload.helpful,
-                &uuid,
-                &campaign_id,
-                &now,
-                &payload.page_url,
-            )
-            .execute(&data.db)
-            .await
-        };
+            .await;
 
         if res.is_ok() {
             break;
@@ -162,36 +140,4 @@ pub async fn rating(
     };
 
     Ok(HttpResponse::Ok().json(resp))
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct DescriptionReq {
-    pub description: String,
-}
-
-#[my_codegen::post(path = "crate::V1_API_ROUTES.feedback.description")]
-pub async fn description(
-    payload: web::Json<DescriptionReq>,
-    path: web::Path<String>,
-    data: AppData,
-) -> ServiceResult<impl Responder> {
-    let path = path.into_inner();
-    let payload = payload.into_inner();
-    let feedback_id = Uuid::parse_str(&path).map_err(|_| ServiceError::NotAnId)?;
-
-    let now = OffsetDateTime::now_utc();
-
-    sqlx::query!(
-        "UPDATE kaizen_feedbacks 
-        SET 
-            description = $1, time  = $2
-        WHERE uuid = $3",
-        &payload.description,
-        &now,
-        &feedback_id,
-    )
-    .execute(&data.db)
-    .await?;
-
-    Ok(HttpResponse::Ok())
 }

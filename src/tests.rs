@@ -1,11 +1,13 @@
 use std::sync::Arc;
 
 use actix_web::test;
+use actix_web::cookie::Cookie;
 use actix_web::{dev::ServiceResponse, error::ResponseError, http::StatusCode};
 use serde::Serialize;
 
 use super::*;
 use crate::api::v1::auth::runners::{Login, Register};
+use crate::api::v1::campaign::{CreateReq, CreateResp, ListCampaignResp};
 use crate::api::v1::ROUTES;
 use crate::data::Data;
 use crate::errors::*;
@@ -170,4 +172,49 @@ pub async fn bad_post_req_test_witout_payload(
     let resp_err: ErrorToResponse = test::read_body_json(resp).await;
     //println!("{}", txt.error);
     assert_eq!(resp_err.error, format!("{}", err));
+}
+
+
+pub async fn create_new_campaign(campaign_name: &str, data: Arc<Data>, cookies: Cookie<'_>) -> CreateResp {
+    let new = CreateReq {
+        name: campaign_name.into(),
+    };
+
+    let app = get_app!(data).await;
+    let new_resp = test::call_service(
+        &app,
+        post_request!(&new, crate::V1_API_ROUTES.campaign.new)
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
+    assert_eq!(new_resp.status(), StatusCode::OK);
+    let uuid: CreateResp = test::read_body_json(new_resp).await;
+    uuid
+}
+
+pub async fn delete_campaign(camapign: &CreateResp, data: Arc<Data>, cookies: Cookie<'_>) {
+    let del_route = crate::V1_API_ROUTES.campaign.delete.replace("{uuid}", &camapign.uuid);
+    let app = get_app!(data).await;
+    let del_resp = test::call_service(
+        &app,
+        post_request!(&del_route)
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
+    assert_eq!(del_resp.status(), StatusCode::OK);
+}
+
+pub async fn list_campaings(data: Arc<Data>, cookies: Cookie<'_>) -> Vec<ListCampaignResp> {
+    let app = get_app!(data).await;
+    let list_resp = test::call_service(
+        &app,
+        post_request!(crate::V1_API_ROUTES.campaign.list)
+            .cookie(cookies)
+            .to_request(),
+    )
+    .await;
+    assert_eq!(list_resp.status(), StatusCode::OK);
+    test::read_body_json(list_resp).await
 }

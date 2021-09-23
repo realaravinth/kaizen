@@ -75,22 +75,6 @@
       "nullable": []
     }
   },
-  "3857b9accef6e145b096f576855665b959857a497add66fea472cf870fe012cc": {
-    "query": "INSERT INTO \n                kaizen_feedbacks (helpful, uuid, campaign_id, time, page_url) \n            VALUES ($1, $2, $3, $4, \n                 (SELECT ID from kaizen_campaign_pages WHERE page_url = $5))",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Bool",
-          "Uuid",
-          "Uuid",
-          "Timestamptz",
-          "Text"
-        ]
-      },
-      "nullable": []
-    }
-  },
   "40709a115986020a7c73cf1dc10dff4667b8192ff8c0a76c37de2901cfb6f81a": {
     "query": "SELECT password  FROM kaizen_users WHERE name = ($1)",
     "describe": {
@@ -120,20 +104,6 @@
           "Varchar",
           "Text",
           "Varchar"
-        ]
-      },
-      "nullable": []
-    }
-  },
-  "48d2e43ec5bcdab82019ccc591aaa8fb93f26afb963aaf8987511ca16aa9dad7": {
-    "query": "UPDATE kaizen_feedbacks \n        SET \n            description = $1, time  = $2\n        WHERE uuid = $3",
-    "describe": {
-      "columns": [],
-      "parameters": {
-        "Left": [
-          "Varchar",
-          "Timestamptz",
-          "Uuid"
         ]
       },
       "nullable": []
@@ -327,7 +297,7 @@
       },
       "nullable": [
         false,
-        true,
+        false,
         false
       ]
     }

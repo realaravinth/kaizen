@@ -158,7 +158,7 @@ pub mod runners {
 
         struct Feedback {
             time: OffsetDateTime,
-            description: Option<String>,
+            description: String,
             helpful: bool,
         }
 
@@ -265,7 +265,7 @@ pub async fn delete(
 #[derive(Serialize, Deserialize)]
 pub struct GetFeedbackResp {
     pub time: u64,
-    pub description: Option<String>,
+    pub description: String,
     pub helpful: bool,
 }
 
@@ -302,4 +302,51 @@ pub async fn list_campaign(
     let list_resp = runners::list_campaign_runner(&username, &data).await?;
 
     Ok(HttpResponse::Ok().json(list_resp))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+
+use crate::api::v1::ROUTES;
+use crate::data::Data;
+use crate::*;
+
+use crate::tests::*;
+
+#[actix_rt::test]
+async fn campaign_works() {
+    let data = Data::new().await;
+    const NAME: &str = "testcampaignuser";
+    const PASSWORD: &str = "longpassword";
+    const EMAIL: &str = "testcampaignuser@a.com";
+    const CAMPAIGN_NAME: &str = "testcampaignuser";
+
+    delete_user(NAME, &data).await;
+    let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
+    let cookies = get_cookie!(signin_resp);
+
+    let uuid = create_new_campaign(NAME, data.clone(), cookies.clone()).await;
+
+    let list = list_campaings(data.clone(), cookies.clone()).await;
+    assert!(list.iter().any(|c| c.name == CAMPAIGN_NAME));
+
+    bad_post_req_test_witout_payload(
+        NAME,
+        PASSWORD,
+        &ROUTES.campaign.delete.replace("{uuid}", NAME),
+        ServiceError::NotAnId,
+    )
+    .await;
+
+    delete_campaign(&uuid, data.clone(), cookies.clone()).await;
+
+
+    let list = list_campaings(data.clone(), cookies.clone()).await;
+    assert!(!list.iter().any(|c| c.name == CAMPAIGN_NAME));
+}
+
+
+
 }

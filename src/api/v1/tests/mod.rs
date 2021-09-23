@@ -15,6 +15,5 @@
 * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 mod auth;
-mod campaign;
 mod feedback;
 mod protected;

@@ -18,7 +18,7 @@ use actix_web::http::StatusCode;
 use actix_web::test;
 
 use crate::api::v1::campaign::{CreateReq, CreateResp, GetFeedbackResp};
-use crate::api::v1::feedback::{DescriptionReq, RatingReq, RatingResp, URL_MAX_LENGTH};
+use crate::api::v1::feedback::{RatingReq, RatingResp, URL_MAX_LENGTH};
 use crate::api::v1::{get_random, ROUTES};
 use crate::data::Data;
 use crate::errors::*;
@@ -61,7 +61,7 @@ async fn feedback_page_url_length() {
 
     let mut rating = RatingReq {
         helpful: true,
-        description: None,
+        description: NAME.into(),
         page_url: url,
     };
 
@@ -119,7 +119,7 @@ async fn feedback_works() {
 
     let mut rating = RatingReq {
         helpful: true,
-        description: None,
+        description: NAME.into(),
         page_url: PAGE_URL.into(),
     };
 
@@ -162,40 +162,6 @@ async fn feedback_works() {
     )
     .await;
     assert_eq!(add_feedback_resp.status(), StatusCode::OK);
-    let feedback_id: RatingResp = test::read_body_json(add_feedback_resp).await;
-
-    let description_req = DescriptionReq {
-        description: NAME.into(),
-    };
-
-    bad_post_req_test(
-        NAME,
-        PASSWORD,
-        &ROUTES.feedback.description.replace("{feedback_id}", NAME),
-        &description_req,
-        ServiceError::NotAnId,
-    )
-    .await;
-
-    let add_description_route = ROUTES
-        .feedback
-        .description
-        .replace("{feedback_id}", &feedback_id.uuid);
-    let set_description_resp = test::call_service(
-        &app,
-        post_request!(&description_req, &add_description_route).to_request(),
-    )
-    .await;
-    assert_eq!(set_description_resp.status(), StatusCode::OK);
-
-    bad_post_req_test(
-        NAME,
-        PASSWORD,
-        &ROUTES.campaign.get_feedback.replace("{uuid}", NAME),
-        &rating,
-        ServiceError::NotAnId,
-    )
-    .await;
 
     let get_feedback_route = ROUTES.campaign.get_feedback.replace("{uuid}", &uuid.uuid);
     let get_feedback_resp = test::call_service(
@@ -207,7 +173,7 @@ async fn feedback_works() {
     .await;
     assert_eq!(get_feedback_resp.status(), StatusCode::OK);
     let feedback: Vec<GetFeedbackResp> = test::read_body_json(get_feedback_resp).await;
-    assert!(feedback.iter().any(|f| f.description == Some(NAME.into())));
+    assert!(feedback.iter().any(|f| f.description == NAME));
 }
 
 #[actix_rt::test]
@@ -240,7 +206,7 @@ async fn feedback_duplicate_page_url_works() {
 
     let rating = RatingReq {
         helpful: true,
-        description: Some(NAME.into()),
+        description: NAME.into(),
         page_url: PAGE_URL.into(),
     };
 
@@ -282,5 +248,5 @@ async fn feedback_duplicate_page_url_works() {
     feedback
         .iter()
         .for_each(|f| println!("{:?}", f.description));
-    assert!(feedback.iter().any(|f| f.description == Some(NAME.into())));
+    assert!(feedback.iter().any(|f| f.description == NAME));
 }

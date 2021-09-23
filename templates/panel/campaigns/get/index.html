@@ -32,24 +32,20 @@
             <.= feedback.helpful .>
           </td>
           <td class="feedback__description">
-            <. if let Some(des) = &feedback.description { .>
-              <. if des.len() > 40 { .>
+            <. if feedback.description.len() > 60 { .>
                 <details>
-                  <. let (summary, rest) = des.split_at(40); .>
+                  <. let (summary, rest) = feedback.description.split_at(60); .>
                   <summary>
                     <.= summary .>
-                  </summary>
+                  </summary> >>
                   <.= rest .>
                 </details>
               <. } else { .>
-                <.= des .>
+                <.= feedback.description .>
               <. } .>
-            <. } else { .>
-                -
             <. } .>
           </td>
         </tr>
-        <. } .>
       </tbody>
     </table>
     <. } .>
