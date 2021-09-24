@@ -46,8 +46,6 @@ mod tests {
         const EMAIL: &str = "templateuser@a.com";
         const CAMPAIGN_NAME: &str = "delcappageusercamaping";
 
-        
-
         let data = Data::new().await;
         {
             delete_user(NAME, &data).await;
@@ -55,7 +53,6 @@ mod tests {
 
         let (_, _, signin_resp) = register_and_signin(NAME, EMAIL, PASSWORD).await;
         let cookies = get_cookie!(signin_resp);
-
 
         let campaign =
             create_new_campaign(CAMPAIGN_NAME, data.clone(), cookies.clone()).await;
@@ -74,6 +71,9 @@ mod tests {
             let resp =
                 test::call_service(&app, test::TestRequest::get().uri(url).to_request())
                     .await;
+            if resp.status() != StatusCode::FOUND {
+                println!("Probably error url: {}", url);
+            }
             assert_eq!(resp.status(), StatusCode::FOUND);
 
             let authenticated_resp = test::call_service(

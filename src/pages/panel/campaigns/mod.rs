@@ -23,7 +23,7 @@ use crate::AppData;
 use crate::PAGES;
 
 pub mod delete;
-pub mod feedback;
+pub mod get;
 pub mod new;
 
 pub mod routes {
@@ -62,7 +62,7 @@ pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     cfg.service(home);
     cfg.service(new::new_campaign);
     cfg.service(new::new_campaign_submit);
-    cfg.service(feedback::get_feedback);
+    cfg.service(get::get_feedback);
     cfg.service(delete::delete_campaign);
     cfg.service(delete::delete_campaign_submit);
 }

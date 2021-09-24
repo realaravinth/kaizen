@@ -232,15 +232,12 @@ pub async fn add_feedback(
     rating: &RatingReq,
     campaign: &CreateResp,
     data: Arc<Data>,
-    cookies: Cookie<'_>,
 ) -> RatingResp {
     let add_feedback_route = V1_API_ROUTES.feedback.add_feedback_route(&campaign.uuid);
     let app = get_app!(data).await;
     let add_feedback_resp = test::call_service(
         &app,
-        post_request!(&rating, &add_feedback_route)
-            .cookie(cookies)
-            .to_request(),
+        post_request!(&rating, &add_feedback_route).to_request(),
     )
     .await;
     assert_eq!(add_feedback_resp.status(), StatusCode::OK);
