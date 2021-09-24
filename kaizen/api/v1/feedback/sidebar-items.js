@@ -1,1 +1,1 @@
-initSidebarItems({"constant":[["URL_MAX_LENGTH",""]],"fn":[["services",""]],"mod":[["routes",""]],"struct":[["RatingReq",""],["RatingResp",""],["rating",""]]});
+initSidebarItems({"constant":[["PAGE",""],["URL_MAX_LENGTH",""]],"fn":[["services",""]],"mod":[["routes",""],["runners",""]],"struct":[["FeedbackSuccess",""],["INDEX",""],["RatingReq",""],["RatingResp",""],["State",""],["rating",""],["rating_form",""]]});

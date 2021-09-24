@@ -117,7 +117,7 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::PAGES</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">delete</span>;
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">feedback</span>;
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">get</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">new</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">routes</span> {
@@ -156,7 +156,7 @@
     <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">home</span>);
     <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">new::new_campaign</span>);
     <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">new::new_campaign_submit</span>);
-    <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">feedback::get_feedback</span>);
+    <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">get::get_feedback</span>);
     <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">delete::delete_campaign</span>);
     <span class="ident">cfg</span>.<span class="ident">service</span>(<span class="ident">delete::delete_campaign_submit</span>);
 }
