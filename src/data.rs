@@ -55,14 +55,14 @@ impl Data {
             log::info!("Initialized credential manager");
         });
 
-        #[cfg(not(debug_assertions))]
-        init.join().unwrap();
-
         let db = PgPoolOptions::new()
             .max_connections(SETTINGS.database.pool)
             .connect(&SETTINGS.database.url)
             .await
             .expect("Unable to form database pool");
+
+        #[cfg(not(debug_assertions))]
+        init.join().unwrap();
 
         let data = Data { db, creds };
 
