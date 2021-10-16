@@ -40,7 +40,7 @@ impl<'a> ViewFeedback<'a> {
 
 #[get(
     path = "PAGES.panel.campaigns.get_feedback",
-    wrap = "crate::CheckLogin"
+    wrap = "crate::get_auth_middleware()"
 )]
 pub async fn get_feedback(
     id: Identity,

@@ -53,14 +53,20 @@ lazy_static! {
     static ref INDEX: String = NewCampaign::default().render_once().unwrap();
 }
 
-#[get(path = "PAGES.panel.campaigns.new", wrap = "crate::CheckLogin")]
+#[get(
+    path = "PAGES.panel.campaigns.new",
+    wrap = "crate::get_auth_middleware()"
+)]
 pub async fn new_campaign() -> impl Responder {
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(&*INDEX)
 }
 
-#[post(path = "PAGES.panel.campaigns.new", wrap = "crate::CheckLogin")]
+#[post(
+    path = "PAGES.panel.campaigns.new",
+    wrap = "crate::get_auth_middleware()"
+)]
 pub async fn new_campaign_submit(
     id: Identity,
     payload: web::Form<CreateReq>,

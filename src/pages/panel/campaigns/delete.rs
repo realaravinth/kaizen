@@ -57,7 +57,10 @@ async fn get_title(
     Ok(format!("Delete camapign \"{}\"?", campaign.name))
 }
 
-#[get(path = "PAGES.panel.campaigns.delete", wrap = "crate::CheckLogin")]
+#[get(
+    path = "PAGES.panel.campaigns.delete",
+    wrap = "crate::get_auth_middleware()"
+)]
 pub async fn delete_campaign(
     id: Identity,
     path: web::Path<String>,
@@ -80,7 +83,10 @@ pub async fn delete_campaign(
         .body(page))
 }
 
-#[post(path = "PAGES.panel.campaigns.delete", wrap = "crate::CheckLogin")]
+#[post(
+    path = "PAGES.panel.campaigns.delete",
+    wrap = "crate::get_auth_middleware()"
+)]
 pub async fn delete_campaign_submit(
     id: Identity,
     path: web::Path<String>,

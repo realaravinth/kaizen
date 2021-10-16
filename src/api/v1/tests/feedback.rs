@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-use actix_web::http::{header, StatusCode};
+use actix_web::http::StatusCode;
 use actix_web::test;
 
 use crate::api::v1::feedback::{RatingReq, URL_MAX_LENGTH};
@@ -177,7 +177,7 @@ async fn feedback_form_works() {
 
     let uuid = create_new_campaign(CAMPAIGN_NAME, data.clone(), cookies.clone()).await;
 
-    let mut rating = RatingReq {
+    let rating = RatingReq {
         helpful: true,
         description: NAME.into(),
         page_url: PAGE_URL.into(),

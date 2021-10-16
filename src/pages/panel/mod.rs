@@ -47,7 +47,7 @@ pub fn services(cfg: &mut actix_web::web::ServiceConfig) {
     campaigns::services(cfg);
 }
 
-#[get(path = "PAGES.panel.home", wrap = "crate::CheckLogin")]
+#[get(path = "PAGES.panel.home", wrap = "crate::get_auth_middleware()")]
 pub async fn home() -> impl Responder {
     HttpResponse::Found()
         .insert_header((http::header::LOCATION, PAGES.panel.campaigns.home))

@@ -81,7 +81,10 @@ impl HomePage {
 
 const PAGE: &str = "Campaigns";
 
-#[get(path = "PAGES.panel.campaigns.home", wrap = "crate::CheckLogin")]
+#[get(
+    path = "PAGES.panel.campaigns.home",
+    wrap = "crate::get_auth_middleware()"
+)]
 pub async fn home(data: AppData, id: Identity) -> impl Responder {
     let username = id.identity().unwrap();
     let campaigns = list_campaign_runner(&username, &data).await.unwrap();

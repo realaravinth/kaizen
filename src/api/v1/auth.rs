@@ -26,12 +26,17 @@ use crate::errors::*;
 use crate::AppData;
 
 pub mod routes {
+    use actix_auth_middleware::Authentication;
     use actix_auth_middleware::GetLoginRoute;
 
     pub struct Auth {
         pub logout: &'static str,
         pub login: &'static str,
         pub register: &'static str,
+    }
+
+    pub fn get_auth_middleware() -> Authentication<Auth> {
+        Authentication::with_identity(crate::V1_API_ROUTES.auth)
     }
 
     impl Auth {
@@ -247,12 +252,20 @@ async fn login(
     }
 }
 
-#[my_codegen::get(path = "crate::V1_API_ROUTES.auth.logout", wrap = "crate::CheckLogin")]
+#[my_codegen::get(
+    path = "crate::V1_API_ROUTES.auth.logout",
+    wrap = "crate::get_auth_middleware()"
+)]
 async fn signout(id: Identity) -> impl Responder {
+    use actix_auth_middleware::GetLoginRoute;
+
     if id.identity().is_some() {
         id.forget();
     }
     HttpResponse::Found()
-        .append_header((header::LOCATION, crate::middleware::auth::AUTH))
+        .append_header((
+            header::LOCATION,
+            crate::V1_API_ROUTES.auth.get_login_route(None),
+        ))
         .finish()
 }

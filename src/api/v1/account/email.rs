@@ -55,7 +55,7 @@ pub async fn email_exists(
 /// update email
 #[my_codegen::post(
     path = "crate::V1_API_ROUTES.account.update_email",
-    wrap = "crate::CheckLogin"
+    wrap = "crate::get_auth_middleware()"
 )]
 async fn set_email(
     id: Identity,

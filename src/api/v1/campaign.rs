@@ -279,7 +279,7 @@ pub struct CreateResp {
 
 #[my_codegen::post(
     path = "crate::V1_API_ROUTES.campaign.new",
-    wrap = "crate::CheckLogin"
+    wrap = "crate::get_auth_middleware()"
 )]
 pub async fn new(
     id: Identity,
@@ -292,7 +292,7 @@ pub async fn new(
 
 #[my_codegen::post(
     path = "crate::V1_API_ROUTES.campaign.delete",
-    wrap = "crate::CheckLogin"
+    wrap = "crate::get_auth_middleware()"
 )]
 pub async fn delete(
     id: Identity,
@@ -321,7 +321,7 @@ pub struct GetFeedbackResp {
 
 #[my_codegen::post(
     path = "crate::V1_API_ROUTES.campaign.get_feedback",
-    wrap = "crate::CheckLogin"
+    wrap = "crate::get_auth_middleware()"
 )]
 pub async fn get_feedback(
     id: Identity,
@@ -342,7 +342,7 @@ pub struct ListCampaignResp {
 
 #[my_codegen::post(
     path = "crate::V1_API_ROUTES.campaign.list",
-    wrap = "crate::CheckLogin"
+    wrap = "crate::get_auth_middleware()"
 )]
 pub async fn list_campaign(
     id: Identity,

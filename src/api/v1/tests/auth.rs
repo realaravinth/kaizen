@@ -135,7 +135,7 @@ async fn auth_works() {
     let headers = signout_resp.headers();
     assert_eq!(
         headers.get(header::LOCATION).unwrap(),
-        crate::middleware::auth::AUTH
+        &crate::V1_API_ROUTES.auth.get_login_route(None)
     );
 
     let creds = Login {

@@ -30,7 +30,6 @@ mod api;
 mod data;
 mod demo;
 mod errors;
-mod middleware;
 mod pages;
 mod settings;
 mod static_assets;
@@ -38,9 +37,9 @@ mod static_assets;
 #[macro_use]
 mod tests;
 
+pub use crate::api::v1::auth::routes::get_auth_middleware;
 pub use crate::data::Data;
 pub use api::v1::ROUTES as V1_API_ROUTES;
-pub use middleware::auth::CheckLogin;
 pub use pages::routes::ROUTES as PAGES;
 pub use settings::Settings;
 pub use static_assets::static_files::assets;
