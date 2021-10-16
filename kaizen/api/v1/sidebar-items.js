@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_random",""],["get_uuid",""],["services",""]],"mod":[["account",""],["auth",""],["campaign",""],["feedback",""],["meta",""],["routes",""]]});
+initSidebarItems({"fn":[["get_random",""],["get_uuid",""],["services",""]],"mod":[["account",""],["auth",""],["campaign",""],["feedback",""],["meta",""],["routes",""]],"struct":[["RedirectQuery",""]]});

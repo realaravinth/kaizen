@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["kaizen"] = [{"text":"impl GetLoginRoute for <a class=\"struct\" href=\"kaizen/api/v1/auth/routes/struct.Auth.html\" title=\"struct kaizen::api::v1::auth::routes::Auth\">Auth</a>","synthetic":false,"types":["kaizen::api::v1::auth::routes::Auth"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

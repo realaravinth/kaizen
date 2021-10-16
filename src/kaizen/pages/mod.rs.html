@@ -202,7 +202,7 @@
             )
             .<span class="kw">await</span>;
 
-            <span class="kw">if</span> <span class="ident">url</span> <span class="op">=</span><span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">PAGES</span>.<span class="ident">home</span> {
+            <span class="kw">if</span> <span class="ident">url</span> <span class="op">=</span><span class="op">=</span> <span class="ident">PAGES</span>.<span class="ident">home</span> {
                 <span class="macro">assert_eq!</span>(<span class="ident">authenticated_resp</span>.<span class="ident">status</span>(), <span class="ident">StatusCode::FOUND</span>);
                 <span class="kw">let</span> <span class="ident">headers</span> <span class="op">=</span> <span class="ident">authenticated_resp</span>.<span class="ident">headers</span>();
                 <span class="macro">assert_eq!</span>(
