@@ -62,8 +62,6 @@ rust-embed = "6.0.0"
 cache-buster = { git = "https://github.com/realaravinth/cache-buster" }
 mime = "0.3.16"
 
-openssl = { version = "0.10.29", features = ["vendored"] }
-
 sailfish = "0.3.2"
 
 tokio = "1.11.0"
