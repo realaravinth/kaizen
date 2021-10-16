@@ -35,6 +35,10 @@ frontend:
 migrate:
 	cargo run --bin tests-migrate
 
+lint: ## Lint codebase
+	cargo fmt -v --all -- --emit files
+	cargo clippy --workspace --tests --all-features
+
 release: frontend
 	cargo build --release
 

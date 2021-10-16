@@ -3,6 +3,17 @@
 version = 3
 
 [[package]]
+name = "actix-auth-middleware"
+version = "0.1.0"
+source = "git+https://github.com/realaravinth/actix-auth-middleware#d9f103e4684d2746cf9e0b3910cf0d9e40f6e93c"
+dependencies = [
+ "actix-http",
+ "actix-service",
+ "actix-web",
+ "futures",
+]
+
+[[package]]
 name = "actix-codec"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1248,6 +1259,7 @@ dependencies = [
 name = "kaizen"
 version = "0.1.0"
 dependencies = [
+ "actix-auth-middleware",
  "actix-cors",
  "actix-http",
  "actix-identity",
@@ -1275,6 +1287,7 @@ dependencies = [
  "sqlx",
  "tokio",
  "url",
+ "urlencoding",
  "uuid",
  "validator",
 ]
@@ -2758,6 +2771,12 @@ dependencies = [
  "matches",
  "percent-encoding",
 ]
+
+[[package]]
+name = "urlencoding"
+version = "2.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "68b90931029ab9b034b300b797048cf23723400aa757e8a2bfb9d748102f9821"
 
 [[package]]
 name = "utf-8"

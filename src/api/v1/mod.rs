@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 use actix_web::web::ServiceConfig;
+use serde::Deserialize;
 use uuid::Uuid;
 
 pub mod account;
@@ -49,6 +50,11 @@ pub fn get_random(len: usize) -> String {
 
 pub fn get_uuid() -> Uuid {
     Uuid::new_v4()
+}
+
+#[derive(Deserialize)]
+pub struct RedirectQuery {
+    pub redirect_to: Option<String>,
 }
 
 #[cfg(test)]

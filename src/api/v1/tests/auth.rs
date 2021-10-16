@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
+use actix_auth_middleware::GetLoginRoute;
 use actix_web::http::{header, StatusCode};
 use actix_web::test;
 
@@ -136,7 +136,24 @@ async fn auth_works() {
     assert_eq!(
         headers.get(header::LOCATION).unwrap(),
         crate::middleware::auth::AUTH
+    );
+
+    let creds = Login {
+        login: NAME.into(),
+        password: PASSWORD.into(),
+    };
+
+    //6. sigin with redirect URL set
+    let redirect_to = ROUTES.auth.logout;
+    let resp = test::call_service(
+        &app,
+        post_request!(&creds, &ROUTES.auth.get_login_route(Some(redirect_to)))
+            .to_request(),
     )
+    .await;
+    assert_eq!(resp.status(), StatusCode::FOUND);
+    let headers = resp.headers();
+    assert_eq!(headers.get(header::LOCATION).unwrap(), &redirect_to);
 }
 
 #[actix_rt::test]

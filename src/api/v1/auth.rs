@@ -21,10 +21,13 @@ use actix_web::{web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 
 use super::get_random;
+use super::RedirectQuery;
 use crate::errors::*;
 use crate::AppData;
 
 pub mod routes {
+    use actix_auth_middleware::GetLoginRoute;
+
     pub struct Auth {
         pub logout: &'static str,
         pub login: &'static str,
@@ -40,6 +43,20 @@ pub mod routes {
                 logout,
                 login,
                 register,
+            }
+        }
+    }
+
+    impl GetLoginRoute for Auth {
+        fn get_login_route(&self, src: Option<&str>) -> String {
+            if let Some(redirect_to) = src {
+                format!(
+                    "{}?redirect_to={}",
+                    self.login,
+                    urlencoding::encode(redirect_to)
+                )
+            } else {
+                self.register.to_string()
             }
         }
     }
@@ -214,12 +231,20 @@ async fn register(
 async fn login(
     id: Identity,
     payload: web::Json<runners::Login>,
+    query: web::Query<RedirectQuery>,
     data: AppData,
 ) -> ServiceResult<impl Responder> {
     let payload = payload.into_inner();
     let username = runners::login_runner(&payload, &data).await?;
     id.remember(username);
-    Ok(HttpResponse::Ok())
+    let query = query.into_inner();
+    if let Some(redirect_to) = query.redirect_to {
+        Ok(HttpResponse::Found()
+            .insert_header((header::LOCATION, redirect_to))
+            .finish())
+    } else {
+        Ok(HttpResponse::Ok().into())
+    }
 }
 
 #[my_codegen::get(path = "crate::V1_API_ROUTES.auth.logout", wrap = "crate::CheckLogin")]
