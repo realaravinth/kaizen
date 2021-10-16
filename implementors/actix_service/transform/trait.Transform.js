@@ -1,3 +1,0 @@
-(function() {var implementors = {};
-implementors["kaizen"] = [{"text":"impl&lt;S&gt; Transform&lt;S, ServiceRequest&gt; for <a class=\"struct\" href=\"kaizen/middleware/auth/struct.CheckLogin.html\" title=\"struct kaizen::middleware::auth::CheckLogin\">CheckLogin</a> <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;S: Service&lt;ServiceRequest, Response = ServiceResponse&lt;AnyBody&gt;, Error = Error&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;S::Future: 'static,&nbsp;</span>","synthetic":false,"types":["kaizen::middleware::auth::CheckLogin"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

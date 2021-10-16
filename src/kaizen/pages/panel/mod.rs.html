@@ -103,7 +103,7 @@
     <span class="ident">campaigns::services</span>(<span class="ident">cfg</span>);
 }
 
-<span class="attribute">#[<span class="ident">get</span>(<span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.home&quot;</span>, <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">get</span>(<span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.home&quot;</span>, <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">home</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Responder</span> {
     <span class="ident">HttpResponse::Found</span>()
         .<span class="ident">insert_header</span>((<span class="ident">http::header::LOCATION</span>, <span class="ident">PAGES</span>.<span class="ident">panel</span>.<span class="ident">campaigns</span>.<span class="ident">home</span>))

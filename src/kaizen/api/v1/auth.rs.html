@@ -256,6 +256,19 @@
 <span id="256">256</span>
 <span id="257">257</span>
 <span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -285,12 +298,17 @@
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::AppData</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">routes</span> {
+    <span class="kw">use</span> <span class="ident">actix_auth_middleware::Authentication</span>;
     <span class="kw">use</span> <span class="ident">actix_auth_middleware::GetLoginRoute</span>;
 
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Auth</span> {
         <span class="kw">pub</span> <span class="ident">logout</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
         <span class="kw">pub</span> <span class="ident">login</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
         <span class="kw">pub</span> <span class="ident">register</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static</span> <span class="ident">str</span>,
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_auth_middleware</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Authentication</span><span class="op">&lt;</span><span class="ident">Auth</span><span class="op">&gt;</span> {
+        <span class="ident">Authentication::with_identity</span>(<span class="kw">crate</span><span class="ident">::V1_API_ROUTES</span>.<span class="ident">auth</span>)
     }
 
     <span class="kw">impl</span> <span class="ident">Auth</span> {
@@ -506,13 +524,21 @@
     }
 }
 
-<span class="attribute">#[<span class="ident">my_codegen::get</span>(<span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.auth.logout&quot;</span>, <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">my_codegen::get</span>(
+    <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.auth.logout&quot;</span>,
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
+)]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">signout</span>(<span class="ident">id</span>: <span class="ident">Identity</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Responder</span> {
+    <span class="kw">use</span> <span class="ident">actix_auth_middleware::GetLoginRoute</span>;
+
     <span class="kw">if</span> <span class="ident">id</span>.<span class="ident">identity</span>().<span class="ident">is_some</span>() {
         <span class="ident">id</span>.<span class="ident">forget</span>();
     }
     <span class="ident">HttpResponse::Found</span>()
-        .<span class="ident">append_header</span>((<span class="ident">header::LOCATION</span>, <span class="kw">crate</span><span class="ident">::middleware::auth::AUTH</span>))
+        .<span class="ident">append_header</span>((
+            <span class="ident">header::LOCATION</span>,
+            <span class="kw">crate</span><span class="ident">::V1_API_ROUTES</span>.<span class="ident">auth</span>.<span class="ident">get_login_route</span>(<span class="prelude-val">None</span>),
+        ))
         .<span class="ident">finish</span>()
 }
 </pre></div>

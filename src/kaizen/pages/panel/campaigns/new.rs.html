@@ -132,6 +132,12 @@
 <span id="132">132</span>
 <span id="133">133</span>
 <span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
 </pre><pre class="rust">
 <span class="comment">/*
  * Copyright (C) 2021  Aravinth Manivannan &lt;realaravinth@batsense.net&gt;
@@ -188,14 +194,20 @@
     <span class="kw">static</span> <span class="kw-2">ref</span> <span class="ident">INDEX</span>: <span class="ident">String</span> <span class="op">=</span> <span class="ident">NewCampaign::default</span>().<span class="ident">render_once</span>().<span class="ident">unwrap</span>();
 }
 
-<span class="attribute">#[<span class="ident">get</span>(<span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.campaigns.new&quot;</span>, <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">get</span>(
+    <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.campaigns.new&quot;</span>,
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
+)]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new_campaign</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">Responder</span> {
     <span class="ident">HttpResponse::Ok</span>()
         .<span class="ident">content_type</span>(<span class="string">&quot;text/html; charset=utf-8&quot;</span>)
         .<span class="ident">body</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">INDEX</span>)
 }
 
-<span class="attribute">#[<span class="ident">post</span>(<span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.campaigns.new&quot;</span>, <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">post</span>(
+    <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.campaigns.new&quot;</span>,
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
+)]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new_campaign_submit</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,
     <span class="ident">payload</span>: <span class="ident">web::Form</span><span class="op">&lt;</span><span class="ident">CreateReq</span><span class="op">&gt;</span>,

@@ -102,7 +102,7 @@
 
 <span class="attribute">#[<span class="ident">get</span>(
     <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;PAGES.panel.campaigns.get_feedback&quot;</span>,
-    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_feedback</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,

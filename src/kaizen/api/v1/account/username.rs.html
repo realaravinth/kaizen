@@ -178,7 +178,7 @@
 <span class="doccomment">/// update username</span>
 <span class="attribute">#[<span class="ident">my_codegen::post</span>(
     <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.account.update_username&quot;</span>,
-    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
 )]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">set_username</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,

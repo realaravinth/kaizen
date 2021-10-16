@@ -677,7 +677,7 @@
 
 <span class="attribute">#[<span class="ident">my_codegen::post</span>(
     <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.campaign.new&quot;</span>,
-    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">new</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,
@@ -690,7 +690,7 @@
 
 <span class="attribute">#[<span class="ident">my_codegen::post</span>(
     <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.campaign.delete&quot;</span>,
-    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">delete</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,
@@ -719,7 +719,7 @@
 
 <span class="attribute">#[<span class="ident">my_codegen::post</span>(
     <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.campaign.get_feedback&quot;</span>,
-    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_feedback</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,
@@ -740,7 +740,7 @@
 
 <span class="attribute">#[<span class="ident">my_codegen::post</span>(
     <span class="ident">path</span> <span class="op">=</span> <span class="string">&quot;crate::V1_API_ROUTES.campaign.list&quot;</span>,
-    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::CheckLogin&quot;</span>
+    <span class="ident">wrap</span> <span class="op">=</span> <span class="string">&quot;crate::get_auth_middleware()&quot;</span>
 )]</span>
 <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">list_campaign</span>(
     <span class="ident">id</span>: <span class="ident">Identity</span>,

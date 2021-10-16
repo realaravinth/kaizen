@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Auth",""]]});
+initSidebarItems({"fn":[["get_auth_middleware",""]],"struct":[["Auth",""]]});
