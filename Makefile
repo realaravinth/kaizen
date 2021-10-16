@@ -22,7 +22,7 @@ doc:
 docker:
 	docker build -t realaravinth/kaizen:master -t realaravinth/kaizen:latest .
 
-docker-publish:
+docker-publish: docker
 	docker push realaravinth/kaizen:master 
 	docker push realaravinth/kaizen:latest
 

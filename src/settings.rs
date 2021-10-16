@@ -94,9 +94,9 @@ impl Settings {
             .expect("Couldn't get the number of CPUs");
 
         const CURRENT_DIR: &str = "./config/default.toml";
-        const ETC: &str = "/etc/athena/config.toml";
+        const ETC: &str = "/etc/kaizen/config.toml";
 
-        if let Ok(path) = env::var("ATHENA_CONFIG") {
+        if let Ok(path) = env::var("KAIZEN_CONFIG") {
             s.merge(File::with_name(&path))?;
         } else if Path::new(CURRENT_DIR).exists() {
             // merging default config from file
@@ -107,7 +107,7 @@ impl Settings {
             log::warn!("configuration file not found");
         }
 
-        s.merge(Environment::with_prefix("ATHENA").separator("_"))?;
+        s.merge(Environment::with_prefix("KAIZEN").separator("__"))?;
 
         check_url(&s);
 
